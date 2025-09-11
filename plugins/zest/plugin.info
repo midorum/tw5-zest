@@ -1,0 +1,13 @@
+{
+	"name": "Zest",
+	"title": "$:/plugins/midorum/zest",
+	"description": "TiddlyWiki for organizing qizzes",
+	"author": "midorum",
+	"version": "0.0.1",
+	"core-version": ">=5.3.3",
+	"source": "https://github.com/midorum/tw5-zest",
+	"demo": "https://tw5-zest.tiddlyhost.com/",
+	"list": "readme configuration license",
+	"dependents": "SRS >=0.1.10 (https://github.com/midorum/tw5-srs)",
+	"plugin-type": "plugin"
+}

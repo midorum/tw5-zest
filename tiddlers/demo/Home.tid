@@ -1,0 +1,25 @@
+title: Home
+type: text/vnd.tiddlywiki
+
+! {{$:/plugins/midorum/zest!!description}}
+
+|Plugin version |{{$:/plugins/midorum/zest!!version}} |
+|Core version |{{$:/plugins/midorum/zest!!core-version}} |
+|Sources |{{$:/plugins/midorum/zest!!source}} |
+|Demo page |{{$:/plugins/midorum/zest!!demo}} |
+|Dependents |{{$:/plugins/midorum/zest!!dependents}} |
+|SRS version |{{$:/plugins/midorum/srs!!version}} |
+
+<div class="tc-error">
+Plugin is not ready for use! Please do not import it!
+</div>
+<!--
+-->
+
+[[link to import|$:/plugins/midorum/zest]]
+
+!! Creating start page
+
+# create ''Home'' (or something like this) tiddler in your wiki
+# set it as your startup tiddler in [[settings|$:/ControlPanel]]
+# put the text `{{Zest Home}}` into your ''Home'' tiddler and save it
