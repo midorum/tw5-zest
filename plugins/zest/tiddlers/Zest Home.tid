@@ -1,4 +1,58 @@
 title: Zest Home
 type: text/vnd.tiddlywiki
 
-<div>Hello from Zest</div>
+\whitespace trim
+<h2>Domains</h2>
+<div class="zest-domains-list">
+  <$list filter="[tag[$:/zest/tags/domain]]" variable="domain" emptyMessage="There are no domains yet.">
+    <div>
+      <$link to=<<domain>>>
+        <$view tiddler=<<domain>> field="name"/>
+      </$link>
+    </div>
+  </$list>
+</div>
+<div style="margin-top:1em;">
+  <$let addFormState="$:/state/zest/add-domain-form-state">
+    <$list filter="[<addFormState>get[text]match[1]]">
+      <div class="zest-add-domain-form" style="border:1px solid #ccc;padding:1em;">
+        <div>
+          <label>
+            Domain name:<br/>
+            <span style="font-size:smaller;color:#888;">Enter a unique name for the domain.</span><br/>
+            <$edit-text tiddler=<<addFormState>> field="domainName" default="" tag="input" style="width:100%;"/>
+          </label>
+        </div>
+        <div style="margin-top:0.7em;">
+          <label>
+            Description:<br/>
+            <span style="font-size:smaller;color:#888;">Optional: describe the domain.</span><br/>
+            <$edit-text tiddler=<<addFormState>> field="domainDesc" default="" tag="textarea" style="width:100%;min-height:3em;"/>
+          </label>
+        </div>
+        <div style="margin-top:1em;">
+          <$tiddler tiddler=<<addFormState>>>
+            <$button>
+              Create Domain
+              <$action-sendmessage $message="tm-zest-create-domain"
+                name={{!!domainName}}
+                description={{!!domainDesc}}
+              />
+              <$action-deletetiddler $tiddler=<<addFormState>>/>
+            </$button>
+          </$tiddler>
+          <$button style="margin-left:1em;">
+            Cancel
+            <$action-deletetiddler $tiddler=<<addFormState>>/>
+          </$button>
+        </div>
+      </div>
+    </$list>
+    <$list filter="[<addFormState>is[missing]]">
+      <$button>
+        Add Domain
+        <$action-setfield $tiddler=<<addFormState>> text="1"/>
+      </$button>
+    </$list>
+  </$let>
+</div>
