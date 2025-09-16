@@ -1,0 +1,198 @@
+title: Category
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+<$let categoryTiddler={{$:/state/zest/current-category}}>
+  <$let editState="$:/state/zest/category-edit" editTmp="$:/temp/zest/category-edit">
+    <$reveal type="match" stateTitle=<<editState>> stateField="text" text="1" >
+        <$edit-text tiddler=<<editTmp>> field="text" tag="input" style="font-size:1.2em;width:100%;"/>
+        <div style="margin-top:0.5em;">
+            <$button class="tc-btn-invisible tc-tiddlylink" >
+                [Save]
+                <$tiddler tiddler=<<editTmp>> >
+                    <$action-sendmessage $message="tm-zest-update-category"
+                        id=<<categoryTiddler>>
+                        name={{!!text}}
+                    />
+                </$tiddler>
+                <$action-setfield $tiddler=<<editState>> text="0"/>
+            </$button>
+            <$button class="tc-btn-invisible tc-tiddlylink" style="margin-left:1em;">
+                [Cancel]
+                <$action-deletetiddler $tiddler=<<editTmp>> />
+                <$action-setfield $tiddler=<<editState>> text="0"/>
+            </$button>
+        </div>
+    </$reveal>
+    <$reveal type="nomatch" stateTitle=<<editState>> stateField="text" text="1" >
+        <h3>
+            <$view tiddler=<<categoryTiddler>> field="text" emptyMessage="(no name)"/>
+        </h3>
+        <p>
+          <$transclude $tiddler="$:/plugins/midorum/zest/templates/tag-pane"
+              qualifier=<<categoryTiddler>>
+              tagFilter="[<categoryTiddler>tags[]tag[$:/zest/tags/domain]]"
+              tagDisplayFieldName="name"
+              removeTagButton="true"
+              addTagButton="true"
+              addTagButtonName="[Link Domain]"
+              mode="block"
+          >
+            <$fill $name="remove-tag-action">
+              <$action-confirm $message="Do you wish to detach the category from this domain?" >
+                <$action-sendmessage $message="tm-zest-detach-category" categoryId=<<categoryTiddler>> domainId=<<tag-ref>> />
+              </$action-confirm>
+            </$fill>
+            <$fill $name="popup-template">
+              <$list filter="[tag[$:/zest/tags/domain]]" variable="selected">
+                  <$button class="tc-btn-invisible tc-tiddlylink">
+                      <$view tiddler=<<selected>> field="name" format="text" />
+                      <$action-sendmessage $message="tm-zest-attach-category" categoryId=<<categoryTiddler>> domainId=<<selected>> />
+                  </$button>
+              </$list>
+            </$fill>
+          </$transclude>
+        </p>
+        <p>
+          <$button class="tc-btn-invisible tc-tiddlylink">
+              [Edit]
+              <$tiddler tiddler=<<categoryTiddler>> >
+                  <$action-setfield $tiddler=<<editTmp>> $field="text" $value={{!!text}} />
+              </$tiddler>
+              <$action-setfield $tiddler=<<editState>> text="1"/>
+          </$button>
+        </p>
+    </$reveal>
+  </$let>
+  <h2>Theses</h2>
+  <$list filter="[tag[$:/zest/tags/thesis]tag<categoryTiddler>]" variable="thesis" emptyMessage="There are no theses yet.">
+    <div style="margin-bottom:1em;">
+      <hr/>
+      <$let thesisEditState="$:/state/zest/thesis-edit" thesisNoteState="$:/state/zest/thesis-note" thesisEditTmp="$:/temp/zest/thesis-edit">
+        <$reveal type="match" stateTitle=<<thesisEditState>> stateIndex=<<thesis>> text="1" >
+          <div>
+            <label>
+              Thesis text:<br/>
+              <$edit-text tiddler=<<thesisEditTmp>> field="text" tag="textarea" style="width:100%;min-height:3em;"/>
+            </label>
+          </div>
+          <div style="margin-top:0.5em;">
+            <label>
+              Note:<br/>
+              <$edit-text tiddler=<<thesisEditTmp>> field="note" tag="textarea" style="width:100%;min-height:2em;"/>
+            </label>
+          </div>
+          <div style="margin-top:0.5em;">
+            <$button class="tc-btn-invisible tc-tiddlylink">
+              [Save]
+              <$tiddler tiddler=<<thesisEditTmp>> >
+                <$action-sendmessage $message="tm-zest-update-thesis"
+                  id=<<thesis>>
+                  text={{!!text}}
+                  note={{!!note}}
+                />
+              </$tiddler>
+              <$action-deletetiddler $tiddler=<<thesisEditTmp>> />
+              <$action-setfield $tiddler=<<thesisEditState>> $index=<<thesis>> $value="0"/>
+            </$button>
+            <$button class="tc-btn-invisible tc-tiddlylink" style="margin-left:1em;">
+              [Cancel]
+              <$action-setfield $tiddler=<<thesisEditState>> $index=<<thesis>> $value="0"/>
+            </$button>
+          </div>
+        </$reveal>
+        <$reveal type="nomatch" stateTitle=<<thesisEditState>> stateIndex=<<thesis>> text="1" >
+          <div>
+            <$view tiddler=<<thesis>> field="text" emptyMessage="(no thesis text)"/>
+          </div>
+          <$reveal type="match" stateTitle=<<thesisNoteState>> stateIndex=<<thesis>> text="1" >
+            <div style="margin-top:0.5em; color:#666;">
+              <$view tiddler=<<thesis>> field="note" emptyMessage="(no note)"/>
+            </div>
+          </$reveal>
+          <div style="margin-top:0.5em;">
+            <$button class="tc-btn-invisible tc-tiddlylink">
+              <$reveal type="match" stateTitle=<<thesisNoteState>> stateIndex=<<thesis>> text="1" >
+                [Hide note]
+                <$action-setfield $tiddler=<<thesisNoteState>> $index=<<thesis>> $value="0"/>
+              </$reveal>
+              <$reveal type="nomatch" stateTitle=<<thesisNoteState>> stateIndex=<<thesis>> text="1" >
+                [Show note]
+                <$action-setfield $tiddler=<<thesisNoteState>> $index=<<thesis>> $value="1"/>
+              </$reveal>
+            </$button>
+            <$button class="tc-btn-invisible tc-tiddlylink" style="margin-left:1em;">
+              [Edit]
+              <$tiddler tiddler=<<thesis>> >
+                <$action-setfield $tiddler=<<thesisEditTmp>> $field="text" $value={{!!text}}/>
+                <$action-setfield $tiddler=<<thesisEditTmp>> $field="note" $value={{!!note}}/>
+              </$tiddler>
+              <$action-setfield $tiddler=<<thesisEditState>> $index=<<thesis>> $value="1"/>
+            </$button>
+            <$button class="tc-btn-invisible tc-tiddlylink" style="margin-left:1em;color:red;">
+              [Delete]
+              <$action-confirm $message="Do you wish to delete this thesis? That cannot be undone!">
+                <$action-sendmessage $message='tm-zest-delete-thesis' id=<<thesis>>/>
+              </$action-confirm>
+            </$button>
+          </div>
+        </$reveal>
+      </$let>
+    </div>
+  </$list>
+  <div style="margin-top:1em;">
+    <$let addThesisFormState="$:/state/zest/add-thesis-form-state">
+      <$reveal type="match" stateTitle=<<addThesisFormState>> stateField="text" text="1" >
+        <div class="zest-add-thesis-form" style="border:1px solid #ccc;padding:1em;">
+          <div>
+            <label>
+              Thesis text:<br/>
+              <span style="font-size:smaller;color:#888;">Enter the thesis text for this category.</span><br/>
+              <$edit-text tiddler=<<addThesisFormState>> field="thesisText" default="" tag="textarea" style="width:100%;min-height:3em;"/>
+            </label>
+          </div>
+          <div style="margin-top:0.7em;">
+            <label>
+              Thesis note:<br/>
+              <span style="font-size:smaller;color:#888;">Optional: add a note to the thesis.</span><br/>
+              <$edit-text tiddler=<<addThesisFormState>> field="thesisNote" default="" tag="textarea" style="width:100%;min-height:2em;"/>
+            </label>
+          </div>
+          <div style="margin-top:1em;">
+            <$tiddler tiddler=<<addThesisFormState>>>
+              <$button class="tc-btn-invisible tc-tiddlylink">
+                [Create Thesis]
+                <$action-sendmessage $message="tm-zest-create-thesis"
+                  categoryId=<<categoryTiddler>>
+                  text={{!!thesisText}}
+                  note={{!!thesisNote}}
+                />
+                <$action-deletetiddler $tiddler=<<addThesisFormState>>/>
+              </$button>
+            </$tiddler>
+            <$button class="tc-btn-invisible tc-tiddlylink" style="margin-left:1em;">
+              [Cancel]
+              <$action-deletetiddler $tiddler=<<addThesisFormState>>/>
+            </$button>
+          </div>
+        </div>
+      </$reveal>
+      <$reveal type="nomatch" stateTitle=<<addThesisFormState>> stateField="text" text="1" >
+        <$button class="tc-btn-invisible tc-tiddlylink" >
+          [Add Thesis]
+          <$action-setfield $tiddler=<<addThesisFormState>> text="1"/>
+        </$button>
+      </$reveal>
+    </$let>
+  </div>
+  <div style="margin-top:1em;">
+    <$button class="tc-btn-invisible tc-tiddlylink" style="color:red;">
+      [Delete Category]
+      <$action-confirm $message="Do you wish to delete this category and all its theses? This cannot be undone!">
+        <$action-sendmessage $message="tm-zest-delete-category" id=<<categoryTiddler>>/>
+        <$action-sendmessage $message="tm-close-tiddler"/>
+        <$action-navigate $to="Domain"/>
+      </$action-confirm>
+    </$button>
+  </div>
+</$let>

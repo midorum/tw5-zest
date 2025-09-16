@@ -1,0 +1,131 @@
+title: Domain
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+<$let domainTiddler={{$:/state/zest/current-domain}}>
+  <$let editState="$:/state/zest/domain-edit">
+      <$reveal type="match" stateTitle=<<editState>> stateField="text" text="1" >
+          <div>
+            <label>
+              Domain Name:<br/>
+              <$edit-text tiddler=<<editState>> field="name" tag="input" style="font-size:1.2em;width:100%;"/>
+            </label>
+          </div>
+          <div style="margin-top:0.5em;">
+            <label>
+              Domain Description:<br/>
+              <$edit-text tiddler=<<editState>> field="description" tag="textarea" style="font-size:1.2em;width:100%;"/>
+            </label>
+          </div>
+          <div style="margin-top:0.5em;">
+              <$button class="tc-btn-invisible tc-tiddlylink" >
+                  [Save]
+                  <$tiddler tiddler=<<editState>> >
+                      <$action-sendmessage $message="tm-zest-update-domain"
+                          id=<<domainTiddler>>
+                          name={{!!name}}
+                          description={{!!description}}
+                      />
+                  </$tiddler>
+                  <$action-deletetiddler $tiddler=<<editState>> />
+              </$button>
+              <$button class="tc-btn-invisible tc-tiddlylink" style="margin-left:1em;">
+                  [Cancel]
+                  <$action-deletetiddler $tiddler=<<editState>> />
+              </$button>
+          </div>
+      </$reveal>
+      <$reveal type="nomatch" stateTitle=<<editState>> stateField="text" text="1" >
+        <h2>
+          <$view tiddler=<<domainTiddler>> field="name" emptyMessage="(no name)"/>
+        </h2>
+        <div style="margin-bottom:1em;">
+          <$view tiddler=<<domainTiddler>> field="text" emptyMessage="(no description)"/>
+        </div>
+        <$button class="tc-btn-invisible tc-tiddlylink">
+            [Edit]
+            <$tiddler tiddler=<<domainTiddler>> >
+                <$action-setfield $tiddler=<<editState>> $field="name" $value={{!!name}} />
+                <$action-setfield $tiddler=<<editState>> $field="description" $value={{!!text}} />
+              </$tiddler>
+            <$action-setfield $tiddler=<<editState>> text="1"/>
+        </$button>
+      </$reveal>
+  </$let>
+  <h3>Categories</h3>
+  <div class="zest-domain-categories-list">
+    <$list filter="[tag[$:/zest/tags/category]tag<domainTiddler>]" variable="cat" emptyMessage="There are no categories yet.">
+      <div>
+        <$button
+          class="tc-btn-invisible tc-tiddlylink" >
+          <$action-setfield $tiddler="$:/state/zest/current-category" text=<<cat>>/>
+          <$action-navigate $to="Category"/>
+          <$view tiddler=<<cat>> field="text"/>
+        </$button>
+      </div>
+    </$list>
+  </div>
+  <div style="margin-top:1em;">
+    <$let addCatFormState="$:/state/zest/add-category-form-state">
+      <$list filter="[<addCatFormState>get[text]match[1]]">
+        <div class="zest-add-category-form" style="border:1px solid #ccc;padding:1em;">
+          <div>
+            <label>
+              Category name:<br/>
+              <span style="font-size:smaller;color:#888;">Enter a unique name for the category.</span><br/>
+              <$edit-text tiddler=<<addCatFormState>> field="categoryName" default="" tag="input" style="width:100%;"/>
+            </label>
+          </div>
+          <div style="margin-top:0.7em;">
+            <label>
+              Thesis text:<br/>
+              <span style="font-size:smaller;color:#888;">Enter a first thesis that describes this category.</span><br/>
+              <$edit-text tiddler=<<addCatFormState>> field="thesisText" default="" tag="textarea" style="width:100%;min-height:3em;"/>
+            </label>
+          </div>
+          <div style="margin-top:0.7em;">
+            <label>
+              Thesis note:<br/>
+              <span style="font-size:smaller;color:#888;">Optional: add a note to the thesis.</span><br/>
+              <$edit-text tiddler=<<addCatFormState>> field="thesisNote" default="" tag="textarea" style="width:100%;min-height:2em;"/>
+            </label>
+          </div>
+          <div style="margin-top:1em;">
+            <$tiddler tiddler=<<addCatFormState>>>
+              <$button class="tc-btn-invisible tc-tiddlylink">
+                [Create Category]
+                <$action-sendmessage $message="tm-zest-create-category"
+                  name={{!!categoryName}}
+                  domainId=<<domainTiddler>>
+                  thesisText={{!!thesisText}}
+                  thesisNote={{!!thesisNote}}
+                />
+                <$action-deletetiddler $tiddler=<<addCatFormState>>/>
+              </$button>
+            </$tiddler>
+            <$button class="tc-btn-invisible tc-tiddlylink" style="margin-left:1em;">
+              [Cancel]
+              <$action-deletetiddler $tiddler=<<addCatFormState>>/>
+            </$button>
+          </div>
+        </div>
+      </$list>
+      <$list filter="[<addCatFormState>is[missing]]">
+        <$button class="tc-btn-invisible tc-tiddlylink">
+          [Add Category]
+          <$action-setfield $tiddler=<<addCatFormState>> text="1"/>
+        </$button>
+      </$list>
+    </$let>
+  </div>
+  <div style="margin-top:1em;">
+    <$button class="tc-btn-invisible tc-tiddlylink" style="color:red;">
+      [Delete Domain]
+      <$action-confirm $message="Do you wish to delete this domain? This cannot be undone!">
+        <$action-sendmessage $message="tm-zest-delete-domain" id=<<domainTiddler>>/>
+        <$action-sendmessage $message="tm-close-tiddler"/>
+        <$action-navigate $to="Zest Home"/>
+      </$action-confirm>
+    </$button>
+  </div>
+</$let>

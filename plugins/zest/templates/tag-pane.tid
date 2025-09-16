@@ -1,0 +1,43 @@
+title: $:/plugins/midorum/zest/templates/tag-pane
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+\parameters (
+    qualifier,
+    tagFilter,
+    tagDisplayFieldName:"title",
+    removeTagButton,
+    addTagButton,
+    addTagButtonName:"[add tag]",
+)
+<$let palette={{$:/palette}} color={{{ [<palette>getindex[primary]] }}} background={{{ [<palette>getindex[background]] }}} >
+    <$list filter=<<tagFilter>> variable="tag-ref">
+        <span class="tc-tag-label" style="margin: 0 0.25em">
+            <$view tiddler=<<tag-ref>> field=<<tagDisplayFieldName>> format="text" />
+            <$list filter="[<removeTagButton>!is[blank]]" >
+                <$button 
+                    tag='span' 
+                    class="tc-remove-tag-button" 
+                    style.fill=<<background>> 
+                    style.font-size="0.75em"
+                    style.line-height="0.5em"
+                >
+                    {{$:/core/images/close-button}}
+                    <$slot $name="remove-tag-action"/>
+                </$button>
+            </$list>
+        </span>
+    </$list>
+    <$list filter="[<addTagButton>!is[blank]]" >
+        <span class="tc-tag-label" style=`margin:0 0.25em;background-color:transparent;border:solid thin $(color)$;color:$(color)$;`>
+            <$button 
+                tag='span' 
+                style.cursor="pointer"
+                popup=`$:/state/popup/tag-pane-template/$(qualifier)$`
+            ><<addTagButtonName>></$button>
+        </span>
+        <$reveal state=`$:/state/popup/tag-pane-template/$(qualifier)$` type="popup" position="below" animate="yes" class="tc-drop-down" >
+            <$slot $name="popup-template"/>
+        </$reveal>
+    </$list>
+</$let>

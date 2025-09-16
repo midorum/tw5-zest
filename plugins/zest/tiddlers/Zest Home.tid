@@ -6,9 +6,12 @@ type: text/vnd.tiddlywiki
 <div class="zest-domains-list">
   <$list filter="[tag[$:/zest/tags/domain]]" variable="domain" emptyMessage="There are no domains yet.">
     <div>
-      <$link to=<<domain>>>
+      <$button
+        class="tc-btn-invisible tc-tiddlylink" >
+        <$action-setfield $tiddler="$:/state/zest/current-domain" text=<<domain>>/>
+        <$action-navigate $to="Domain"/>
         <$view tiddler=<<domain>> field="name"/>
-      </$link>
+      </$button>
     </div>
   </$list>
 </div>
@@ -32,8 +35,8 @@ type: text/vnd.tiddlywiki
         </div>
         <div style="margin-top:1em;">
           <$tiddler tiddler=<<addFormState>>>
-            <$button>
-              Create Domain
+            <$button class="tc-btn-invisible tc-tiddlylink">
+              [Create Domain]
               <$action-sendmessage $message="tm-zest-create-domain"
                 name={{!!domainName}}
                 description={{!!domainDesc}}
@@ -41,16 +44,16 @@ type: text/vnd.tiddlywiki
               <$action-deletetiddler $tiddler=<<addFormState>>/>
             </$button>
           </$tiddler>
-          <$button style="margin-left:1em;">
-            Cancel
+          <$button class="tc-btn-invisible tc-tiddlylink" style="margin-left:1em;">
+            [Cancel]
             <$action-deletetiddler $tiddler=<<addFormState>>/>
           </$button>
         </div>
       </div>
     </$list>
     <$list filter="[<addFormState>is[missing]]">
-      <$button>
-        Add Domain
+      <$button class="tc-btn-invisible tc-tiddlylink">
+        [Add Domain]
         <$action-setfield $tiddler=<<addFormState>> text="1"/>
       </$button>
     </$list>
