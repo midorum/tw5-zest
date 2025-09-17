@@ -5,13 +5,13 @@ type: text/vnd.tiddlywiki
 <$let domainTiddler={{$:/state/zest/current-domain}}>
   <$let editState="$:/state/zest/domain-edit">
       <$reveal type="match" stateTitle=<<editState>> stateField="text" text="1" >
-          <div>
+          <div class="zest-wide-input">
             <label>
               Domain Name:<br/>
               <$edit-text tiddler=<<editState>> field="name" tag="input" style="font-size:1.2em;width:100%;"/>
             </label>
           </div>
-          <div style="margin-top:0.5em;">
+          <div class="zest-wide-input" style="margin-top:0.5em;">
             <label>
               Domain Description:<br/>
               <$edit-text tiddler=<<editState>> field="description" tag="textarea" style="font-size:1.2em;width:100%;"/>
@@ -69,21 +69,21 @@ type: text/vnd.tiddlywiki
     <$let addCatFormState="$:/state/zest/add-category-form-state">
       <$list filter="[<addCatFormState>get[text]match[1]]">
         <div class="zest-add-category-form" style="border:1px solid #ccc;padding:1em;">
-          <div>
+          <div class="zest-wide-input">
             <label>
               Category name:<br/>
               <span style="font-size:smaller;color:#888;">Enter a unique name for the category.</span><br/>
               <$edit-text tiddler=<<addCatFormState>> field="categoryName" default="" tag="input" style="width:100%;"/>
             </label>
           </div>
-          <div style="margin-top:0.7em;">
+          <div class="zest-wide-input" style="margin-top:0.7em;">
             <label>
               Thesis text:<br/>
               <span style="font-size:smaller;color:#888;">Enter a first thesis that describes this category.</span><br/>
               <$edit-text tiddler=<<addCatFormState>> field="thesisText" default="" tag="textarea" style="width:100%;min-height:3em;"/>
             </label>
           </div>
-          <div style="margin-top:0.7em;">
+          <div class="zest-wide-input" style="margin-top:0.7em;">
             <label>
               Thesis note:<br/>
               <span style="font-size:smaller;color:#888;">Optional: add a note to the thesis.</span><br/>

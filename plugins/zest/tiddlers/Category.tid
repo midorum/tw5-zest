@@ -5,7 +5,9 @@ type: text/vnd.tiddlywiki
 <$let categoryTiddler={{$:/state/zest/current-category}}>
   <$let editState="$:/state/zest/category-edit" editTmp="$:/temp/zest/category-edit">
     <$reveal type="match" stateTitle=<<editState>> stateField="text" text="1" >
-        <$edit-text tiddler=<<editTmp>> field="text" tag="input" style="font-size:1.2em;width:100%;"/>
+        <div class="zest-wide-input">
+          <$edit-text tiddler=<<editTmp>> field="text" tag="input" style="font-size:1.2em;width:100%;"/>
+        </div>
         <div style="margin-top:0.5em;">
             <$button class="tc-btn-invisible tc-tiddlylink" >
                 [Save]
@@ -70,13 +72,13 @@ type: text/vnd.tiddlywiki
       <hr/>
       <$let thesisEditState="$:/state/zest/thesis-edit" thesisNoteState="$:/state/zest/thesis-note" thesisEditTmp="$:/temp/zest/thesis-edit">
         <$reveal type="match" stateTitle=<<thesisEditState>> stateIndex=<<thesis>> text="1" >
-          <div>
+          <div class="zest-wide-input">
             <label>
               Thesis text:<br/>
               <$edit-text tiddler=<<thesisEditTmp>> field="text" tag="textarea" style="width:100%;min-height:3em;"/>
             </label>
           </div>
-          <div style="margin-top:0.5em;">
+          <div class="zest-wide-input" style="margin-top:0.5em;">
             <label>
               Note:<br/>
               <$edit-text tiddler=<<thesisEditTmp>> field="note" tag="textarea" style="width:100%;min-height:2em;"/>
@@ -144,14 +146,14 @@ type: text/vnd.tiddlywiki
     <$let addThesisFormState="$:/state/zest/add-thesis-form-state">
       <$reveal type="match" stateTitle=<<addThesisFormState>> stateField="text" text="1" >
         <div class="zest-add-thesis-form" style="border:1px solid #ccc;padding:1em;">
-          <div>
+          <div class="zest-wide-input">
             <label>
               Thesis text:<br/>
               <span style="font-size:smaller;color:#888;">Enter the thesis text for this category.</span><br/>
               <$edit-text tiddler=<<addThesisFormState>> field="thesisText" default="" tag="textarea" style="width:100%;min-height:3em;"/>
             </label>
           </div>
-          <div style="margin-top:0.7em;">
+          <div class="zest-wide-input" style="margin-top:0.7em;">
             <label>
               Thesis note:<br/>
               <span style="font-size:smaller;color:#888;">Optional: add a note to the thesis.</span><br/>

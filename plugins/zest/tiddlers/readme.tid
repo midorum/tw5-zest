@@ -1,0 +1,14 @@
+title: $:/plugins/midorum/zest/readme
+type: text/vnd.tiddlywiki
+
+!! TiddlyWiki plugin for organizing personal quizzes.
+
+Zest is a plugin for TiddlyWiki that transforms your wiki into a flexible quiz and knowledge management system. It enables you to organize information into domains (areas of knowledge), categories (topics within domains), and theses (statements or facts about categories). These pairs of category and thesis can be used for interval repetition and self-testing.
+
+Zest is designed to help you prepare for various types of tests, exams, or learning sessions by structuring your knowledge and supporting spaced repetition.
+
+You can find information about installing and try Zest in action on the [[demo page|https://tw5-zest.tiddlyhost.com/]].
+
+Project sources hosted [[here|https://github.com/midorum/tw5-zest]].
+
+Enjoy organizing and mastering your knowledge with Zest!

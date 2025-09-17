@@ -1,0 +1,16 @@
+title: $:/plugins/midorum/zest/templates/question
+type: text/vnd.tiddlywiki
+tags: $:/srs/tags/forwardQuestionCard
+srs-current-type: $:/zest/tags/thesis
+
+\whitespace trim
+\parameters (
+ src,
+ random
+)
+What is described by the following thesis:
+<h2>
+    <$tiddler tiddler=<<src>>>
+        {{!!text}}
+    </$tiddler>
+</h2>

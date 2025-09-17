@@ -1,0 +1,7 @@
+\rules only filteredtranscludeinline transcludeinline macrodef macrocallinline html
+
+/* Zest global styles */
+.zest-wide-input input,
+.zest-wide-input textarea {
+  width: 100%;
+}

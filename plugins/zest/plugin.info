@@ -1,9 +1,9 @@
 {
 	"name": "Zest",
 	"title": "$:/plugins/midorum/zest",
-	"description": "TiddlyWiki for organizing qizzes",
+	"description": "TiddlyWiki plugin for organizing personal quizzes",
 	"author": "midorum",
-	"version": "0.0.1",
+	"version": "0.1.0",
 	"core-version": ">=5.3.3",
 	"source": "https://github.com/midorum/tw5-zest",
 	"demo": "https://tw5-zest.tiddlyhost.com/",

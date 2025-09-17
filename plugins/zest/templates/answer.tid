@@ -1,0 +1,31 @@
+title: $:/plugins/midorum/zest/templates/answer
+type: text/vnd.tiddlywiki
+tags: $:/srs/tags/forwardAnswerCard
+srs-current-type: $:/zest/tags/thesis
+
+\whitespace trim
+\parameters (
+ src,
+ random
+)
+The answer is:
+<$list filter="[<src>tags[]tag[$:/zest/tags/category]]" >
+    <h2>
+        <$view field="text" format="text" />
+    </h2>
+    <$button class="tc-btn-invisible tc-tiddlylink" >
+        <$action-setfield $tiddler="$:/state/zest/current-category" text=<<currentTiddler>> />
+        <$action-navigate $to="Category"/>
+        [see more about this category]
+    </$button>
+</$list>
+<p>
+    <$list filter="[<src>get[note]]" emptyMessage="This thesis has no notes">
+        <h3>
+            Thesis Note
+        </h3>
+        <p>
+            <<currentTiddler>>
+        </p>
+    </$list>
+</p>

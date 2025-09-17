@@ -1,57 +1,14 @@
 title: Versions
 type: text/vnd.tiddlywiki
 
-!! 0.2.9
-
-* fixed getting focused questions for provided learning session
-* fixed questions ordering for provided learning session
-
-!! 0.2.8
-
-* attach user tags to usage examples
-* using user custom tags to mark word articles and usage examples as focused (have a special meaning for user)
-** such word articles and usage examples have the precedence when orginizing the learning session
-* improved: prevent log statistic when the last answer time is today
-
-!! 0.2.7
-
-* new: log and display a detailed statistic for word articles, rules and usage examples
-* fix: exclude duplicate items from provided session data
-* fix: exclude from provided learning session scheduled rules which are in the future
-* improved: take new articles for provided learning session prior to overdue ones
-* improved: added the ability to delete orphan transcription tags from transcription group
-
-!! 0.2.6
-
-* changed: new learning session algorithm that considers both words and grammar rules
-
-!! 0.2.5
-
-* new: tree-like representation of language rules 
-
-!! 0.2.4
-
-* changed `review` mode when learn rules; added `challenge` mode
-
-!! 0.2.3
-
-* new: mixing in examples that are not related to any rule to a rule review session
-
-!! 0.2.2
-
-* fix: added empty option to the rules learning mode selector
-* improved: timer-less learning session for language rules (the session does not refill unless you have done all tests) (req. SRS plugin >=0.1.5)
-
-!! 0.2.1
-
-* improved search output for language rules
-
-!! 0.2.0
-
-* language rules form goes back to normal view after start learning rules session
-* retain checked state for rules selected to learn
-* added rules review session mode
-
 !! 0.1.0
 
-* first working version after extracting to a plugin
+* First working version of Zest plugin.
+* Supports creation, editing, and deletion of domains, categories, and theses.
+* Categories can be linked to multiple domains.
+* Each category requires at least one thesis.
+* Deleting a category removes all its theses.
+* Prevents orphaned categories and theses.
+* Includes demo data and documentation.
+* Integrates with SRS plugin for interval repetition.
+* Initial UI for managing domains, categories, and theses.

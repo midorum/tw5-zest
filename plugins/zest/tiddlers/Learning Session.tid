@@ -1,0 +1,21 @@
+title: Learning Session
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+<$let domainTiddler={{$:/state/zest/current-domain}}>
+    <h2>
+        Selected Domain:&nbsp;<$view tiddler=<<domainTiddler>> field="name" emptyMessage="(no name)"/>
+    </h2>
+    <$transclude
+        $tiddler="$:/plugins/midorum/srs/templates/SrsLearningSessionDynamicTemplate"
+        src="$:/zest/tags/thesis"
+        groupStrategy=groupOnly
+        groupFilter=`[<currentTiddler>tags[]tag[$:/zest/tags/category]tags[$:/zest/tags/domain]match[$(domainTiddler)$]]`
+        limit=100
+        session="$:/state/zest/session"
+        resetAfter=-1
+        order=newFirst
+        directions="forward"
+        directionButtons="[[Start Practice]]" 
+    />
+</$let>
