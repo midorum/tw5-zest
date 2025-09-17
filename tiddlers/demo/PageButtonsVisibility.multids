@@ -2,3 +2,5 @@ title: $:/config/PageControlButtons/Visibility/
 
 $:/core/ui/Buttons/home show
 $:/core/ui/Buttons/new-tiddler hide
+$:/core/ui/Buttons/storyview show
+$:/core/ui/Buttons/more-page-actions show
