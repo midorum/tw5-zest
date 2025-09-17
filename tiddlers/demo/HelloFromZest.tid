@@ -1,4 +1,4 @@
-title: Home
+title: Hello form Zest!
 type: text/vnd.tiddlywiki
 
 ! {{$:/plugins/midorum/zest!!description}}
@@ -52,6 +52,10 @@ You can try Zest in action right in [[this|Zest Home]] wiki.
 
 <<<
 Also you need to install the [[SRS plugin|https://github.com/midorum/tw5-srs]] if you haven't done this yet.
+<<<
+
+<<<
+If you like the appearance of this wiki, you can simply download it from [[here|Set Up Your Own Wiki]]. You'll get a fully configured copy ready to use with your data.
 <<<
 
 !! How to Use Zest

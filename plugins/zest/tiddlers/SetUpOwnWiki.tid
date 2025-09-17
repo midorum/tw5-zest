@@ -1,0 +1,52 @@
+title: Set Up Your Own Wiki
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+!! Set Up Your Own Zest Wiki
+
+Fill in your preferences below to configure your wiki. All fields are required.
+
+<$let state="$:/state/zest/setup-wiki">
+  <div style="border:1px solid #ccc;padding:1em;max-width:500px;">
+    <div style="margin-bottom:1em;">
+      <label>
+        Wiki Name:<br/>
+        <span style="font-size:smaller;color:#888;">Displayed as the wiki title.</span><br/>
+        <$edit-text tiddler="$:/SiteTitle" field="text" tag="input" style="width:100%;"/>
+      </label>
+    </div>
+    <div style="margin-bottom:1em;">
+      <label>
+        Wiki Description:<br/>
+        <span style="font-size:smaller;color:#888;">Displayed as the wiki subtitle.</span><br/>
+        <$edit-text tiddler="$:/SiteSubtitle"  field="text" tag="input" style="width:100%;"/>
+      </label>
+    </div>
+    <div style="margin-bottom:1em;">
+      <label>
+        Start Page Name:<br/>
+        <span style="font-size:smaller;color:#888;">Name of the start page (should not match any existing tiddler).</span><br/>
+        <$edit-text tiddler=<<state>> field="startPage" default="Home" tag="input" style="width:100%;"/>
+      </label>
+    </div>
+    <div style="margin-bottom:1em;">
+      <label>
+        Wiki Filename:<br/>
+        <span style="font-size:smaller;color:#888;">Filename for saving the wiki.</span><br/>
+        <$edit-text tiddler="$:/config/SaveWikiButton/Filename"  field="text" tag="input" style="width:100%;"/>
+      </label>
+    </div>
+    <div style="margin-top:1.5em;">
+        <$let startPage={{{ [[$:/state/zest/setup-wiki]get[startPage]else[Home]] }}} >
+            <$button class="tc-btn-invisible tc-tiddlylink">
+                Create and Download Your Own Wiki
+                <$action-createtiddler $basetitle=<<startPage>> text="{{Zest Home}}"/>
+                <$action-setfield $tiddler="$:/DefaultTiddlers" text=`[[$(startPage)$]]`/>
+                <$wikify name="site-title" text={{$:/config/SaveWikiButton/Filename}}>
+                    <$action-sendmessage $message="tm-download-file" $param={{$:/config/SaveWikiButton/Template}} filename=<<site-title>>/>
+                </$wikify>
+            </$button>
+        </$let>
+    </div>
+  </div>
+</$let>
