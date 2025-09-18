@@ -37,10 +37,10 @@ type: text/vnd.tiddlywiki
       </$reveal>
       <$reveal type="nomatch" stateTitle=<<editState>> stateField="text" text="1" >
         <h2>
-          <$view tiddler=<<domainTiddler>> field="name" emptyMessage="(no name)"/>
+          <$transclude $tiddler=<<domainTiddler>> $field="name" $mode="block"/>
         </h2>
         <div style="margin-bottom:1em;">
-          <$view tiddler=<<domainTiddler>> field="text" emptyMessage="(no description)"/>
+          <$transclude $tiddler=<<domainTiddler>> $field="text" $mode="block"/>
         </div>
         <$button class="tc-btn-invisible tc-tiddlylink">
             [Edit]
