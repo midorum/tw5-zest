@@ -27,9 +27,9 @@ type: text/vnd.tiddlywiki
         </div>
     </$reveal>
     <$reveal type="nomatch" stateTitle=<<editState>> stateField="text" text="1" >
-        <h3>
-            <$view tiddler=<<categoryTiddler>> field="text" emptyMessage="(no name)"/>
-        </h3>
+        <h2>
+          <$transclude $tiddler=<<categoryTiddler>> $field="text" $mode="block"/>
+        </h2>
         <p>
           <$transclude $tiddler="$:/plugins/midorum/zest/templates/tag-pane"
               qualifier=<<categoryTiddler>>
@@ -105,11 +105,11 @@ type: text/vnd.tiddlywiki
         </$reveal>
         <$reveal type="nomatch" stateTitle=<<thesisEditState>> stateIndex=<<thesis>> text="1" >
           <div>
-            <$view tiddler=<<thesis>> field="text" emptyMessage="(no thesis text)"/>
+            <$transclude $tiddler=<<thesis>> $field="text" $mode="block"/>
           </div>
           <$reveal type="match" stateTitle=<<thesisNoteState>> stateIndex=<<thesis>> text="1" >
-            <div style="margin-top:0.5em; color:#666;">
-              <$view tiddler=<<thesis>> field="note" emptyMessage="(no note)"/>
+            <div style="margin-top:0.5em; color:grey;">
+              <$transclude $tiddler=<<thesis>> $field="note" $mode="block"/>
             </div>
           </$reveal>
           <div style="margin-top:0.5em;">
