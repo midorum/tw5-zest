@@ -10,7 +10,5 @@ srs-current-type: $:/zest/tags/thesis
 )
 What is described by the following thesis:
 <h2>
-    <$tiddler tiddler=<<src>>>
-        {{!!text}}
-    </$tiddler>
+    <$transclude $tiddler=<<src>> $field="text" $mode="block"/>
 </h2>
