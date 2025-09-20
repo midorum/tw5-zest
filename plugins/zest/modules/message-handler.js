@@ -14,6 +14,24 @@ Handling zest messages.
 
   const utils = require("$:/plugins/midorum/zest/modules/utils.js").zestUtils;
 
+  function validateThesisStatements(correctStatements, incorrectStatements) {
+    const result = {};
+    if (!correctStatements && !incorrectStatements) {
+      return result;
+    }
+    if (!correctStatements || !incorrectStatements) {
+      throw new Error("Both thesis correct statements and incorrect statements must be provided together");
+    }
+    const csl = utils.parseStringList(correctStatements, false);
+    const isl = utils.parseStringList(incorrectStatements, false);
+    if (csl.length === 0 || isl.length === 0) {
+      throw new Error("Both thesis correct statements and incorrect statements must be non-empty arrays");
+    }
+    result.correct = utils.stringifyList(csl);
+    result.incorrect = utils.stringifyList(isl);
+    return result;
+  }
+
   /**
    * Create a new domain.
    * @param {Object} params - Parameters object.
@@ -145,7 +163,9 @@ Handling zest messages.
    * @param {string} params.domainId - Domain tiddler id. (required)
    * @param {string} params.thesisText - Thesis text. (required)
    * @param {string} [params.thesisNote] - Thesis note.
-   * @throws Alerts if required fields are missing or domain not found.
+   * @param {Array} [params.thesisCorrectStatements] - Optional array of correct statements for thesis.
+   * @param {Array} [params.thesisIncorrectStatements] - Optional array of incorrect statements for thesis.
+   * @throws Alerts if required fields are missing or domain not found, or statement validation fails.
    */
   exports.createCategory = function (params, widget, env) {
     const context = {
@@ -170,6 +190,19 @@ Handling zest messages.
     }
     if (!thesisText) {
       context.logger.alert(utils.formatString(alertMsg, "thesis text"));
+      return;
+    }
+    const thesisStatements = (() => {
+      try {
+        return validateThesisStatements(
+          utils.trimToUndefined(params.thesisCorrectStatements),
+          utils.trimToUndefined(params.thesisIncorrectStatements));
+      } catch (e) {
+        context.logger.alert(e.message);
+        return undefined;
+      }
+    })();
+    if (!thesisStatements) {
       return;
     }
     // Check domain exists
@@ -198,6 +231,10 @@ Handling zest messages.
       note: thesisNote,
       tags: [thesisTag, categoryTitle, "$:/srs/tags/scheduledForward"]
     };
+    if (thesisStatements.correct && thesisStatements.incorrect) {
+      thesisFields["correct-statements"] = thesisStatements.correct;
+      thesisFields["incorrect-statements"] = thesisStatements.incorrect;
+    }
     context.wikiUtils.addTiddler(thesisFields);
   };
 
@@ -366,7 +403,9 @@ Handling zest messages.
    * @param {string} params.categoryId - Category tiddler id. (required)
    * @param {string} params.text - Thesis text. (required)
    * @param {string} [params.note] - Thesis note.
-   * @throws Alerts if required fields are missing or category not found.
+   * @param {Array} [params.correctStatements] - Optional array of correct statements for thesis.
+   * @param {Array} [params.incorrectStatements] - Optional array of incorrect statements for thesis.
+   * @throws Alerts if required fields are missing or category not found, or statement validation fails.
    */
   exports.createThesis = function (params, widget, env) {
     const context = {
@@ -387,6 +426,19 @@ Handling zest messages.
       context.logger.alert("Thesis text cannot be empty");
       return;
     }
+    const thesisStatements = (() => {
+      try {
+        return validateThesisStatements(
+          utils.trimToUndefined(params.correctStatements),
+          utils.trimToUndefined(params.incorrectStatements));
+      } catch (e) {
+        context.logger.alert(e.message);
+        return undefined;
+      }
+    })();
+    if (thesisStatements === undefined) {
+      return;
+    }
     const categoryTiddler = context.wikiUtils.withTiddler(categoryId);
     if (!categoryTiddler.exists()) {
       context.logger.alert("Category not found");
@@ -401,6 +453,10 @@ Handling zest messages.
       note: thesisNote,
       tags: [thesisTag, categoryId, "$:/srs/tags/scheduledForward"]
     };
+    if (thesisStatements.correct && thesisStatements.incorrect) {
+      thesisFields["correct-statements"] = thesisStatements.correct;
+      thesisFields["incorrect-statements"] = thesisStatements.incorrect;
+    }
     context.wikiUtils.addTiddler(thesisFields);
   };
 
@@ -410,7 +466,9 @@ Handling zest messages.
    * @param {string} params.id - Thesis tiddler id. (required)
    * @param {string} params.text - New thesis text. (required)
    * @param {string} [params.note] - New thesis note.
-   * @throws Alerts if id is missing, thesis not found, or text is empty.
+   * @param {Array} [params.correctStatements] - Optional array of correct statements for thesis.
+   * @param {Array} [params.incorrectStatements] - Optional array of incorrect statements for thesis.
+   * @throws Alerts if id is missing, thesis not found, or text is empty, or statement validation fails.
    */
   exports.updateThesis = function (params, widget, env) {
     const context = {
@@ -435,9 +493,33 @@ Handling zest messages.
       context.logger.alert("Thesis text cannot be empty");
       return;
     }
+    const thesisStatements = (() => {
+      try {
+        return validateThesisStatements(
+          utils.trimToUndefined(params.correctStatements),
+          utils.trimToUndefined(params.incorrectStatements));
+      } catch (e) {
+        context.logger.alert(e.message);
+        return undefined;
+      }
+    })();
+    if (thesisStatements === undefined) {
+      return;
+    }
     const updateFields = {};
     updateFields.text = newText;
     updateFields.note = newNote;
+    if (!thesisStatements.correct && !thesisStatements.incorrect) {
+      // If both are undefined, remove both fields
+      updateFields["correct-statements"] = undefined;
+      updateFields["incorrect-statements"] = undefined;
+    } else if (thesisStatements.correct && thesisStatements.incorrect) {
+      updateFields["correct-statements"] = thesisStatements.correct;
+      updateFields["incorrect-statements"] = thesisStatements.incorrect;
+    } else {
+      context.logger.alert("Internal error: thesis statement validation failed");
+      return;
+    }
     thesisTiddler.doNotInvokeSequentiallyOnSameTiddler.updateTiddler(updateFields);
   };
 

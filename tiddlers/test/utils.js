@@ -58,7 +58,7 @@ const Pusher = function (wiki, tags, prefixes) {
         return category;
     }
 
-    function createThesis(text, note, categoryId, idx) {
+    function createThesis(text, note, correctStatements, incorrectStatements, categoryId, idx) {
         if (!text) throw new Error("text is required");
         if (!categoryId) throw new Error("categoryId is required");
         const thesisTitle = `${prefixes.thesis}${categoryId.substring(prefixes.category.length)}_thesis_${idx || 0}`;
@@ -68,6 +68,12 @@ const Pusher = function (wiki, tags, prefixes) {
             note: note,
             tags: [tags.thesis, categoryId]
         };
+        if (correctStatements) {
+            thesis["correct-statements"] = $tw.utils.stringifyList(correctStatements);
+        }
+        if (incorrectStatements) {
+            thesis["incorrect-statements"] = $tw.utils.stringifyList(incorrectStatements);
+        }
         wiki.addTiddler(thesis);
         return thesis;
     }
@@ -83,7 +89,9 @@ const Pusher = function (wiki, tags, prefixes) {
                     theses: [
                         {
                             text: "some text",
-                            note: "some note"
+                            note: "some note",
+                            correctStatements: ["statement1", "statement2"],
+                            incorrectStatements: ["statement3", "statement4"]
                         }
                     ]
                 }
@@ -103,7 +111,7 @@ const Pusher = function (wiki, tags, prefixes) {
                     }
                     category.theses = [];
                     cat.theses.forEach((thesis, idx) => {
-                        category.theses.push(createThesis(thesis.text, thesis.note, category.title, idx));
+                        category.theses.push(createThesis(thesis.text, thesis.note, thesis.correctStatements, thesis.incorrectStatements, category.title, idx));
                     });
                 });
             }

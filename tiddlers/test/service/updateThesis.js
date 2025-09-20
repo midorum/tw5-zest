@@ -75,4 +75,144 @@ describe("The updateThesis service", () => {
         expect(tiddler.fields.text).toEqual(params.text);
         expect(tiddler.fields.note).toBeUndefined();
     });
+
+    it("should fail if only correctStatements is provided", () => {
+        const options = utils.setupWiki();
+        const domain = options.push.domain({ name: 'Domain1', categories: [{ name: 'Category1', theses: [{ text: 'Thesis1' }] }] });
+        const thesis = domain.categories[0].theses[0];
+        const params = {
+            id: thesis.title,
+            text: "Updated text",
+            correctStatements: "[[A is true]]",
+        };
+        const expectedMessage = "Both thesis correct statements and incorrect statements must be provided together";
+        expect(messageHandler.updateThesis(params, options.widget, options.env)).nothing();
+        expect(Logger.alert).toHaveBeenCalledTimes(1);
+        const results = Logger.alert.calls.first().args;
+        expect(results[0]).toContain(expectedMessage);
+    });
+
+    it("should fail if only incorrectStatements is provided", () => {
+        const options = utils.setupWiki();
+        const domain = options.push.domain({ name: 'Domain1', categories: [{ name: 'Category1', theses: [{ text: 'Thesis1' }] }] });
+        const thesis = domain.categories[0].theses[0];
+        const params = {
+            id: thesis.title,
+            text: "Updated text",
+            incorrectStatements: "[[B is false]]"
+        };
+        const expectedMessage = "Both thesis correct statements and incorrect statements must be provided together";
+        expect(messageHandler.updateThesis(params, options.widget, options.env)).nothing();
+        expect(Logger.alert).toHaveBeenCalledTimes(1);
+        const results = Logger.alert.calls.first().args;
+        expect(results[0]).toContain(expectedMessage);
+    });
+
+    it("should fail if the correctStatements is an empty array", () => {
+        const options = utils.setupWiki();
+        const domain = options.push.domain({ name: 'Domain1', categories: [{ name: 'Category1', theses: [{ text: 'Thesis1' }] }] });
+        const thesis = domain.categories[0].theses[0];
+        const params = {
+            id: thesis.title,
+            text: "Updated text",
+            correctStatements: "[[]]",
+            incorrectStatements: "[[B is false]]"
+        };
+        const expectedMessage = "Both thesis correct statements and incorrect statements must be non-empty arrays";
+        expect(messageHandler.updateThesis(params, options.widget, options.env)).nothing();
+        expect(Logger.alert).toHaveBeenCalledTimes(1);
+        const results = Logger.alert.calls.first().args;
+        expect(results[0]).toContain(expectedMessage);
+    });
+
+    it("should fail if the incorrectStatements is an empty array", () => {
+        const options = utils.setupWiki();
+        const domain = options.push.domain({ name: 'Domain1', categories: [{ name: 'Category1', theses: [{ text: 'Thesis1' }] }] });
+        const thesis = domain.categories[0].theses[0];
+        const params = {
+            id: thesis.title,
+            text: "Updated text",
+            correctStatements: "[[A is true]]",
+            incorrectStatements: "[[]]"
+        };
+        const expectedMessage = "Both thesis correct statements and incorrect statements must be non-empty arrays";
+        expect(messageHandler.updateThesis(params, options.widget, options.env)).nothing();
+        expect(Logger.alert).toHaveBeenCalledTimes(1);
+        const results = Logger.alert.calls.first().args;
+        expect(results[0]).toContain(expectedMessage);
+    });
+
+    it("should update thesis with correct and incorrect statements when both are provided and non-empty", () => {
+        const options = utils.setupWiki();
+        const domain = options.push.domain({
+            name: 'Domain1', categories: [{
+                name: 'Category1', theses: [{
+                    text: 'Thesis1',
+                    correctStatements: ["A is true"],
+                    incorrectStatements: ["B is false"]
+                }]
+            }]
+        });
+        const thesis = domain.categories[0].theses[0];
+        const params = {
+            id: thesis.title,
+            text: "Updated text",
+            correctStatements: "[[C is true]]",
+            incorrectStatements: "[[D is false]]"
+        };
+        messageHandler.updateThesis(params, options.widget, options.env);
+        expect(Logger.alert).toHaveBeenCalledTimes(0);
+        const tiddler = options.wiki.getTiddler(thesis.title);
+        expect(tiddler.fields["correct-statements"]).toEqual(params.correctStatements);
+        expect(tiddler.fields["incorrect-statements"]).toEqual(params.incorrectStatements);
+    });
+
+    it("should remove correct and incorrect statements if both parameters are undefined", () => {
+        const options = utils.setupWiki();
+        const domain = options.push.domain({
+            name: 'Domain1', categories: [{
+                name: 'Category1', theses: [{
+                    text: 'Thesis1',
+                    correctStatements: ["A is true"],
+                    incorrectStatements: ["B is false"]
+                }]
+            }]
+        });
+        const thesis = domain.categories[0].theses[0];
+        // Ensure fields exist before update
+        expect(options.wiki.getTiddler(thesis.title).fields["correct-statements"]).toBeDefined();
+        expect(options.wiki.getTiddler(thesis.title).fields["incorrect-statements"]).toBeDefined();
+        const params = {
+            id: thesis.title,
+            text: "Updated text"
+        };
+        messageHandler.updateThesis(params, options.widget, options.env);
+        const tiddler = options.wiki.getTiddler(thesis.title);
+        expect(tiddler.fields["correct-statements"]).toBeUndefined();
+        expect(tiddler.fields["incorrect-statements"]).toBeUndefined();
+    });
+
+    it("should merge duplicate statements in both correct and incorrect lists on update", () => {
+        const options = utils.setupWiki();
+        const domain = options.push.domain({
+            name: 'Domain1', categories: [{
+                name: 'Category1', theses: [{
+                    text: 'Thesis1',
+                    correctStatements: ["A is true"],
+                    incorrectStatements: ["B is false"]
+                }]
+            }]
+        });
+        const thesis = domain.categories[0].theses[0];
+        const params = {
+            id: thesis.title,
+            text: "Updated text",
+            correctStatements: "[[A is true]] [[A is true]] [[B is true]]",
+            incorrectStatements: "[[C is false]] [[C is false]] [[D is false]] [[D is false]]"
+        };
+        messageHandler.updateThesis(params, options.widget, options.env);
+        const tiddler = options.wiki.getTiddler(thesis.title);
+        expect(tiddler.fields["correct-statements"]).toEqual("[[A is true]] [[B is true]]");
+        expect(tiddler.fields["incorrect-statements"]).toEqual("[[C is false]] [[D is false]]");
+    });
 });
