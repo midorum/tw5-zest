@@ -52,6 +52,7 @@ type: text/vnd.tiddlywiki
         </$button>
       </$reveal>
   </$let>
+
   <h3>Categories</h3>
   <div class="zest-domain-categories-list">
     <$list filter="[tag[$:/zest/tags/category]tag<domainTiddler>]" variable="cat" emptyMessage="There are no categories yet.">
@@ -65,51 +66,134 @@ type: text/vnd.tiddlywiki
       </div>
     </$list>
   </div>
+
   <div style="margin-top:1em;">
-    <$let addCatFormState="$:/state/zest/add-category-form-state">
+    <$let addCatFormState="$:/state/zest/add-category-form-state" 
+      correctStatementTag="$:/temp/zest/tag/correctStatement" incorrectStatementTag="$:/temp/zest/tag/incorrectStatement" 
+      tmpTiddlerBaseTitle="$:/temp/zest/holder">
       <$list filter="[<addCatFormState>get[text]match[1]]">
         <div class="zest-add-category-form" style="border:1px solid #ccc;padding:1em;">
           <div class="zest-wide-input">
             <label>
               Category name:<br/>
               <span style="font-size:smaller;color:#888;">Enter a unique name for the category.</span><br/>
-              <$edit-text tiddler=<<addCatFormState>> field="categoryName" default="" tag="input" style="width:100%;"/>
+              <$edit-text tiddler=<<addCatFormState>> field="categoryName" default="" tag="input" />
             </label>
           </div>
           <div class="zest-wide-input" style="margin-top:0.7em;">
             <label>
               Thesis text:<br/>
               <span style="font-size:smaller;color:#888;">Enter a first thesis that describes this category.</span><br/>
-              <$edit-text tiddler=<<addCatFormState>> field="thesisText" default="" tag="textarea" style="width:100%;min-height:3em;"/>
+              <$edit-text tiddler=<<addCatFormState>> field="thesisText" default="" tag="textarea" style="min-height:3em;"/>
             </label>
           </div>
           <div class="zest-wide-input" style="margin-top:0.7em;">
             <label>
               Thesis note:<br/>
               <span style="font-size:smaller;color:#888;">Optional: add a note to the thesis.</span><br/>
-              <$edit-text tiddler=<<addCatFormState>> field="thesisNote" default="" tag="textarea" style="width:100%;min-height:2em;"/>
+              <$edit-text tiddler=<<addCatFormState>> field="thesisNote" default="" tag="textarea" style="min-height:2em;"/>
             </label>
           </div>
+
+          <!-- Begin thesis statements block -->
+          <p>
+            <$radio tiddler=<<addCatFormState>> field="showStatementsForm" value="1" 
+            style.margin="0 0.25em 0 0.5em"
+            actions="""
+              <$action-createtiddler $basetitle=<<tmpTiddlerBaseTitle>> tags=<<correctStatementTag>> />
+              <$action-createtiddler $basetitle=<<tmpTiddlerBaseTitle>> tags=<<incorrectStatementTag>> />
+            """>
+              &nbsp;Thesis contains statements
+            </$radio>
+            <$radio tiddler=<<addCatFormState>> field="showStatementsForm" value="0" default="0" 
+            style.margin="0 0.25em 0 0.5em"
+            actions="""
+            <$action-deletetiddler $filter="[tag<correctStatementTag>] [tag<incorrectStatementTag>]" />
+            """>
+              &nbsp;Thesis does not contain statements
+            </$radio>
+          </p>
+
+          <$reveal type="match" stateTitle=<<addCatFormState>> stateField="showStatementsForm"  text="1" >
+            <p>
+              <div class="zest-wide-input" style="margin-top:0.7em;">
+                <label>
+                  Correct statements:<br/>
+                  <span style="font-size:smaller;color:#888;">Add one or more correct statements about the thesis.</span>
+                  <$list filter="[tag<correctStatementTag>]" variable="statementField">
+                    <$edit-text tiddler=<<statementField>> tag="input" style="margin-top:0.3em;"/>
+                    <$list filter="[tag<correctStatementTag>count[]compare:number:gt[1]]" variable="_">
+                      <$button class="tc-btn-invisible tc-tiddlylink">
+                        [Delete]
+                        <$action-deletetiddler $tiddler=<<statementField>> />
+                      </$button>
+                    </$list>
+                  </$list>
+                  <div style="margin-top=0.5em">
+                    <$button class="tc-btn-invisible tc-tiddlylink">
+                      [Add another correct statement]
+                      <$action-createtiddler $basetitle=<<tmpTiddlerBaseTitle>> tags=<<correctStatementTag>> />
+                    </$button>
+                  </div>
+                </label>
+              </div>
+            </p>
+
+            <p>
+              <div class="zest-wide-input" style="margin-top:0.7em;">
+                <label>
+                  Incorrect statements:<br/>
+                  <span style="font-size:smaller;color:#888;">Add one or more incorrect statements about the thesis.</span>
+                  <$list filter="[tag<incorrectStatementTag>]" variable="statementField">
+                    <$edit-text tiddler=<<statementField>> tag="input" style="margin-top:0.3em;"/>
+                    <$list filter="[tag<incorrectStatementTag>count[]compare:number:gt[1]]" variable="_">
+                      <$button class="tc-btn-invisible tc-tiddlylink">
+                        [Delete]
+                        <$action-deletetiddler $tiddler=<<statementField>> />
+                      </$button>
+                    </$list>
+                  </$list>
+                  <div style="margin-top=0.5em">
+                    <$button class="tc-btn-invisible tc-tiddlylink">
+                      [Add another incorrect statement]
+                      <$action-createtiddler $basetitle=<<tmpTiddlerBaseTitle>> tags=<<incorrectStatementTag>> />
+                    </$button>
+                  </div>
+                </label>
+              </div>
+            </p>
+          </$reveal>
+          <!-- End thesis statements block -->
+
           <div style="margin-top:1em;">
-            <$tiddler tiddler=<<addCatFormState>>>
-              <$button class="tc-btn-invisible tc-tiddlylink">
-                [Create Category]
-                <$action-sendmessage $message="tm-zest-create-category"
-                  name={{!!categoryName}}
-                  domainId=<<domainTiddler>>
-                  thesisText={{!!thesisText}}
-                  thesisNote={{!!thesisNote}}
-                />
-                <$action-deletetiddler $tiddler=<<addCatFormState>>/>
-              </$button>
-            </$tiddler>
+            <$set name="thesisCorrectStatements" filter="[tag<correctStatementTag>get[text]]">
+            <$set name="thesisIncorrectStatements" filter="[tag<incorrectStatementTag>get[text]]">
+              <$tiddler tiddler=<<addCatFormState>>>
+                <$button class="tc-btn-invisible tc-tiddlylink">
+                  [Create Category]
+                  <$action-sendmessage $message="tm-zest-create-category"
+                    name={{!!categoryName}}
+                    domainId=<<domainTiddler>>
+                    thesisText={{!!thesisText}}
+                    thesisNote={{!!thesisNote}}
+                    thesisCorrectStatements=<<thesisCorrectStatements>>
+                    thesisIncorrectStatements=<<thesisIncorrectStatements>>
+                  />
+                  <$action-deletetiddler $tiddler=<<addCatFormState>>/>
+                  <$action-deletetiddler $filter="[tag<correctStatementTag>] [tag<incorrectStatementTag>]" />
+                </$button>
+              </$tiddler>
+            </$set>
+            </$set>
             <$button class="tc-btn-invisible tc-tiddlylink" style="margin-left:1em;">
               [Cancel]
               <$action-deletetiddler $tiddler=<<addCatFormState>>/>
+              <$action-deletetiddler $filter="[tag<correctStatementTag>] [tag<incorrectStatementTag>]" />
             </$button>
           </div>
         </div>
       </$list>
+
       <$list filter="[<addCatFormState>is[missing]]">
         <$button class="tc-btn-invisible tc-tiddlylink">
           [Add Category]
@@ -118,6 +202,7 @@ type: text/vnd.tiddlywiki
       </$list>
     </$let>
   </div>
+
   <div style="margin-top:1em;">
     <$button class="tc-btn-invisible tc-tiddlylink" style="color:red;">
       [Delete Domain]
