@@ -74,7 +74,9 @@ type: text/vnd.tiddlywiki
   <$list filter="[tag[$:/zest/tags/thesis]tag<categoryTiddler>]" variable="thesis" emptyMessage="There are no theses yet.">
     <div style="margin-bottom:1em;">
       <hr/>
-      <$let thesisEditState="$:/state/zest/thesis-edit" thesisNoteState="$:/state/zest/thesis-note" thesisEditTmp="$:/temp/zest/thesis-edit">
+      <$let thesisEditState="$:/state/zest/thesis-edit" thesisNoteState="$:/state/zest/thesis-note" thesisEditTmp="$:/temp/zest/thesis-edit"
+        correctStatementTag="$:/temp/zest/tag/correctStatement" incorrectStatementTag="$:/temp/zest/tag/incorrectStatement" 
+        tmpTiddlerBaseTitle="$:/temp/zest/holder" showStatementsFormFieldName="showStatementsForm" >
 
         <$reveal type="match" stateTitle=<<thesisEditState>> stateIndex=<<thesis>> text="1" >
           <div class="zest-wide-input">
@@ -83,6 +85,14 @@ type: text/vnd.tiddlywiki
               <$edit-text tiddler=<<thesisEditTmp>> field="text" tag="textarea" style="width:100%;min-height:3em;"/>
             </label>
           </div>
+          <$transclude
+            $tiddler="$:/plugins/midorum/zest/templates/thesis-statements-editor"
+            state=<<thesisEditState>>
+            showStatementsFormFieldName=<<showStatementsFormFieldName>>
+            tmpTiddlerBaseTitle=<<tmpTiddlerBaseTitle>>
+            correctStatementTag=<<correctStatementTag>>
+            incorrectStatementTag=<<incorrectStatementTag>>
+          />
           <div class="zest-wide-input" style="margin-top:0.5em;">
             <label>
               Note:<br/>
@@ -92,13 +102,19 @@ type: text/vnd.tiddlywiki
           <div style="margin-top:0.5em;">
             <$button class="tc-btn-invisible tc-tiddlylink">
               [Save]
-              <$tiddler tiddler=<<thesisEditTmp>> >
-                <$action-sendmessage $message="tm-zest-update-thesis"
-                  id=<<thesis>>
-                  text={{!!text}}
-                  note={{!!note}}
-                />
-              </$tiddler>
+              <$set name="thesisCorrectStatements" filter="[tag<correctStatementTag>get[text]]">
+              <$set name="thesisIncorrectStatements" filter="[tag<incorrectStatementTag>get[text]]">
+                <$tiddler tiddler=<<thesisEditTmp>> >
+                  <$action-sendmessage $message="tm-zest-update-thesis"
+                    id=<<thesis>>
+                    text={{!!text}}
+                    note={{!!note}}
+                    correctStatements=<<thesisCorrectStatements>>
+                    incorrectStatements=<<thesisIncorrectStatements>>
+                  />
+                </$tiddler>
+              </$set>
+              </$set>
               <$action-deletetiddler $tiddler=<<thesisEditTmp>> />
               <$action-setfield $tiddler=<<thesisEditState>> $index=<<thesis>> $value="0"/>
             </$button>
@@ -141,6 +157,14 @@ type: text/vnd.tiddlywiki
               <$tiddler tiddler=<<thesis>> >
                 <$action-setfield $tiddler=<<thesisEditTmp>> $field="text" $value={{!!text}}/>
                 <$action-setfield $tiddler=<<thesisEditTmp>> $field="note" $value={{!!note}}/>
+                <$action-deletetiddler $filter="[tag<correctStatementTag>] [tag<incorrectStatementTag>]" />
+                <$list filter="[<thesis>get[correct-statements]enlist-input[]]" >
+                  <$action-createtiddler $basetitle=<<tmpTiddlerBaseTitle>> tags=<<correctStatementTag>> text=<<currentTiddler>> />
+                  <$action-setfield $tiddler=<<thesisEditState>> $field=<<showStatementsFormFieldName>> $value="1"/>
+                </$list>
+                <$list filter="[<thesis>get[incorrect-statements]enlist-input[]]" >
+                  <$action-createtiddler $basetitle=<<tmpTiddlerBaseTitle>> tags=<<incorrectStatementTag>> text=<<currentTiddler>> />
+                </$list>
               </$tiddler>
               <$action-setfield $tiddler=<<thesisEditState>> $index=<<thesis>> $value="1"/>
             </$button>

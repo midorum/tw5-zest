@@ -59,9 +59,13 @@ type: text/vnd.tiddlywiki
       <div>
         <$button
           class="tc-btn-invisible tc-tiddlylink" >
+          <$view tiddler=<<cat>> field="text"/>
+          <!-- reset category form state (tight coupling) -->
+          <$action-deletetiddler $tiddler="$:/state/zest/thesis-edit" />
+          <$action-deletetiddler $tiddler="$:/temp/zest/thesis-edit" />
+          <!-- go to the category form -->
           <$action-setfield $tiddler="$:/state/zest/current-category" text=<<cat>>/>
           <$action-navigate $to="Category"/>
-          <$view tiddler=<<cat>> field="text"/>
         </$button>
       </div>
     </$list>
@@ -94,77 +98,12 @@ type: text/vnd.tiddlywiki
               <$edit-text tiddler=<<addCatFormState>> field="thesisNote" default="" tag="textarea" style="min-height:2em;"/>
             </label>
           </div>
-
-          <!-- Begin thesis statements block -->
-          <p>
-            <$radio tiddler=<<addCatFormState>> field="showStatementsForm" value="1" 
-            style.margin="0 0.25em 0 0.5em"
-            actions="""
-              <$action-createtiddler $basetitle=<<tmpTiddlerBaseTitle>> tags=<<correctStatementTag>> />
-              <$action-createtiddler $basetitle=<<tmpTiddlerBaseTitle>> tags=<<incorrectStatementTag>> />
-            """>
-              &nbsp;Thesis contains statements
-            </$radio>
-            <$radio tiddler=<<addCatFormState>> field="showStatementsForm" value="0" default="0" 
-            style.margin="0 0.25em 0 0.5em"
-            actions="""
-            <$action-deletetiddler $filter="[tag<correctStatementTag>] [tag<incorrectStatementTag>]" />
-            """>
-              &nbsp;Thesis does not contain statements
-            </$radio>
-          </p>
-
-          <$reveal type="match" stateTitle=<<addCatFormState>> stateField="showStatementsForm"  text="1" >
-            <p>
-              <div class="zest-wide-input" style="margin-top:0.7em;">
-                <label>
-                  Correct statements:<br/>
-                  <span style="font-size:smaller;color:#888;">Add one or more correct statements about the thesis.</span>
-                  <$list filter="[tag<correctStatementTag>]" variable="statementField">
-                    <$edit-text tiddler=<<statementField>> tag="input" style="margin-top:0.3em;"/>
-                    <$list filter="[tag<correctStatementTag>count[]compare:number:gt[1]]" variable="_">
-                      <$button class="tc-btn-invisible tc-tiddlylink">
-                        [Delete]
-                        <$action-deletetiddler $tiddler=<<statementField>> />
-                      </$button>
-                    </$list>
-                  </$list>
-                  <div style="margin-top=0.5em">
-                    <$button class="tc-btn-invisible tc-tiddlylink">
-                      [Add another correct statement]
-                      <$action-createtiddler $basetitle=<<tmpTiddlerBaseTitle>> tags=<<correctStatementTag>> />
-                    </$button>
-                  </div>
-                </label>
-              </div>
-            </p>
-
-            <p>
-              <div class="zest-wide-input" style="margin-top:0.7em;">
-                <label>
-                  Incorrect statements:<br/>
-                  <span style="font-size:smaller;color:#888;">Add one or more incorrect statements about the thesis.</span>
-                  <$list filter="[tag<incorrectStatementTag>]" variable="statementField">
-                    <$edit-text tiddler=<<statementField>> tag="input" style="margin-top:0.3em;"/>
-                    <$list filter="[tag<incorrectStatementTag>count[]compare:number:gt[1]]" variable="_">
-                      <$button class="tc-btn-invisible tc-tiddlylink">
-                        [Delete]
-                        <$action-deletetiddler $tiddler=<<statementField>> />
-                      </$button>
-                    </$list>
-                  </$list>
-                  <div style="margin-top=0.5em">
-                    <$button class="tc-btn-invisible tc-tiddlylink">
-                      [Add another incorrect statement]
-                      <$action-createtiddler $basetitle=<<tmpTiddlerBaseTitle>> tags=<<incorrectStatementTag>> />
-                    </$button>
-                  </div>
-                </label>
-              </div>
-            </p>
-          </$reveal>
-          <!-- End thesis statements block -->
-
+          <$transclude
+            $tiddler="$:/plugins/midorum/zest/templates/thesis-statements-editor"
+            tmpTiddlerBaseTitle=<<tmpTiddlerBaseTitle>>
+            correctStatementTag=<<correctStatementTag>>
+            incorrectStatementTag=<<incorrectStatementTag>>
+          />
           <div style="margin-top:1em;">
             <$set name="thesisCorrectStatements" filter="[tag<correctStatementTag>get[text]]">
             <$set name="thesisIncorrectStatements" filter="[tag<incorrectStatementTag>get[text]]">
