@@ -1,0 +1,4 @@
+title: $:/plugins/midorum/zest/filteroperators/shuffle.js
+type: application/javascript
+module-type: zestfilteroperator
+tags: FilterOperators

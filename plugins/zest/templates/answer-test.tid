@@ -1,0 +1,41 @@
+title: $:/plugins/midorum/zest/templates/answer-test
+type: text/vnd.tiddlywiki
+tags: $:/srs/tags/forwardAnswerCard
+srs-current-type: $:/zest/tags/thesis
+zest-question-type: test
+
+\whitespace trim
+\parameters (
+    src,
+    random,
+    hitStatus
+)
+<$list filter="[<src>tags[]tag[$:/zest/tags/category]]" variable="category" >
+    <p>
+        <$list filter="[<hitStatus>compare:string:eq[hit]]" >
+            <div style="color: lime;" >
+                Well done! That was a solid grasp of &nbsp;<b><$view tiddler=<<category>> field=<<text>> format="text" /></b>&nbsp; principles.
+            </div>
+        </$list>
+        <$list filter="[<hitStatus>!compare:string:eq[hit]]" >
+            <div style="color: red;" >
+                Solid try! Pay extra attention to &nbsp;<b><$view tiddler=<<category>> field=<<text>> format="text" /></b>&nbsp; — you've got this!
+            </div>
+        </$list>
+    </p>
+    <p>
+        <$list filter="[<src>get[note]]" emptyMessage="This thesis has no notes">
+            <h3>
+                Thesis Note
+            </h3>
+            <$transclude $tiddler=<<currentTiddler>> $field="title" $mode="block"/>
+        </$list>
+    </p>
+    <p>
+        <$button class="tc-btn-invisible tc-tiddlylink" >
+            <$action-setfield $tiddler="$:/state/zest/current-category" text=<<category>> />
+            <$action-navigate $to="Category"/>
+            [see more about this category]
+        </$button>
+    </p>
+</$list>

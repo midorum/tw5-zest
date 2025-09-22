@@ -1,0 +1,19 @@
+title: $:/plugins/midorum/zest/templates/question-test
+type: text/vnd.tiddlywiki
+tags: $:/srs/tags/forwardQuestionCard
+srs-current-type: $:/zest/tags/thesis
+zest-question-type: test
+
+\whitespace trim
+\parameters (
+    src,
+    random,
+    correct-answers-count
+)
+What is described by the following thesis:
+<h2>
+    <$transclude $tiddler=<<src>> $field="text" $mode="block"/>
+</h2>
+<p>
+    <$slot $name="statements"/>
+</p>

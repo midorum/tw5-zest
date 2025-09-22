@@ -1,7 +1,8 @@
-title: $:/plugins/midorum/zest/templates/answer
+title: $:/plugins/midorum/zest/templates/answer-default
 type: text/vnd.tiddlywiki
 tags: $:/srs/tags/forwardAnswerCard
 srs-current-type: $:/zest/tags/thesis
+zest-question-type: default
 
 \whitespace trim
 \parameters (

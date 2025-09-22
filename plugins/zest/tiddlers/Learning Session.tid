@@ -7,7 +7,7 @@ type: text/vnd.tiddlywiki
         Selected Domain:&nbsp;<$view tiddler=<<domainTiddler>> field="name" emptyMessage="(no name)"/>
     </h2>
     <$transclude
-        $tiddler="$:/plugins/midorum/srs/templates/SrsLearningSessionDynamicTemplate"
+        $tiddler="$:/plugins/midorum/zest/templates/SrsLearningSessionDynamicTemplate"
         src="$:/zest/tags/thesis"
         groupStrategy=groupOnly
         groupFilter=`[<currentTiddler>tags[]tag[$:/zest/tags/category]tags[$:/zest/tags/domain]match[$(domainTiddler)$]]`
