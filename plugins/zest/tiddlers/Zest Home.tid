@@ -16,10 +16,14 @@ type: text/vnd.tiddlywiki
         class="tc-btn-invisible tc-tiddlylink" style="margin-left:0.5em"
         tooltip="Learn categories in this domain"
       >
+        <!-- reset learning session state (tight coupling) -->
         <$list filter="[[$:/state/zest/session]!is[missing]]" >
           <$action-sendmessage $message="tm-srs-delete-session" ref="$:/state/zest/session" />
           <$action-deletetiddler $tiddler="$:/state/zest/session" />
+          <$action-deletetiddler $tiddler="$:/temp/srs/state/buttonsDisabled" />
+          <$action-deletetiddler $tiddler="$:/state/zest/SrsLearningSessionDynamicTemplate" />
         </$list>
+        <!-- go to the learning session form -->
         <$action-setfield $tiddler="$:/state/zest/current-domain" text=<<domain>>/>
         <$action-navigate $to="Learning Session"/>
         {{$:/core/images/help}}
@@ -27,6 +31,7 @@ type: text/vnd.tiddlywiki
     </div>
   </$list>
 </div>
+
 <div style="margin-top:1em;">
   <$let addFormState="$:/state/zest/add-domain-form-state">
     <$list filter="[<addFormState>get[text]match[1]]">
