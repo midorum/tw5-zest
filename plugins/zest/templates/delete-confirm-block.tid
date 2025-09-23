@@ -1,0 +1,48 @@
+title: $:/plugins/midorum/zest/templates/delete-confirm-block
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+\parameters (
+    state:"$:/state/zest/delete-confirm-block",
+    qualifier,
+    confirmPhrase:"DELETE",
+    outsideDeleteButtonText:"Delete",
+    insideDeleteButtonText:"Delete",
+    insideCancelButtonText:"Cancel",
+    warningText:"WARNING: This will delete this item. THIS CANNOT BE UNDONE!",
+    additionalWarningText:"Are you absolutely sure? This cannot be undone!",
+)
+<$let qualifiedState=`$(state)$-$(qualifier)$` >
+    <$reveal type="nomatch" stateTitle=<<qualifiedState>> stateField="text" text="1" >
+        <$button class="tc-btn-invisible tc-tiddlylink" style="color:red;">
+            <$text text=<<outsideDeleteButtonText>> />
+            <$action-setfield $tiddler=<<qualifiedState>> text="1"/>
+        </$button>
+    </$reveal>
+    <$reveal type="match" stateTitle=<<qualifiedState>> stateField="text" text="1" >
+        <div style="border:1px solid #f00;padding:1em;margin-top:1em;">
+            <div style="color:red;font-weight:bold;">
+            <$text text=<<warningText>> /><br/>
+            Please type <code><$text text=<<confirmPhrase>> /></code> below to confirm.
+            </div>
+            <div style="margin-top:0.7em;">
+            <$edit-text tiddler=<<qualifiedState>> field="phrase" default="" tag="input" style="width:12em;"/>
+            </div>
+            <div style="margin-top:1em;">
+            <$button class="tc-btn-invisible tc-tiddlylink" style="color:red;">
+                <$text text=<<insideDeleteButtonText>> />
+                <$list filter="[<qualifiedState>get[phrase]match<confirmPhrase>]" variable="_">
+                    <$action-confirm $message=<<additionalWarningText>> >
+                        <$slot $name="deleteActions" />
+                        <$action-deletetiddler $tiddler=<<qualifiedState>>/>
+                    </$action-confirm>
+                </$list>
+            </$button>
+            <$button class="tc-btn-invisible tc-tiddlylink" style="margin-left:1em;">
+                <$text text=<<insideCancelButtonText>> />
+                <$action-deletetiddler $tiddler=<<qualifiedState>>/>
+            </$button>
+            </div>
+        </div>
+    </$reveal>
+</$let>
