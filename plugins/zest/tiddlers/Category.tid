@@ -168,12 +168,21 @@ type: text/vnd.tiddlywiki
               </$tiddler>
               <$action-setfield $tiddler=<<thesisEditState>> $index=<<thesis>> $value="1"/>
             </$button>
-            <$button class="tc-btn-invisible tc-tiddlylink" style="margin-left:1em;color:red;">
-              [Delete]
-              <$action-confirm $message="Do you wish to delete this thesis? THIS CANNOT BE UNDONE! It's highly recommended to create a backup of your wiki prior you delete anything. Your data is your responsibility.">
-                <$action-sendmessage $message='tm-zest-delete-thesis' id=<<thesis>>/>
-              </$action-confirm>
-            </$button>
+
+            <span style="margin-left:1em;" >
+              <$transclude $tiddler="$:/plugins/midorum/zest/templates/delete-confirm-block" 
+                qualifier=<<thesis>>
+                outsideDeleteButtonText="[Delete]"
+                insideDeleteButtonText="[Delete Thesis]"
+                insideCancelButtonText="[Cancel]"
+                warningText="WARNING: This will delete the thesis. THIS CANNOT BE UNDONE!"
+              >
+                <$fill $name="deleteActions" >
+                  <$action-sendmessage $message='tm-zest-delete-thesis' id=<<thesis>>/>
+                </$fill>
+              </$transclude>
+            </span>
+
           </div>
         </$reveal>
 
@@ -250,14 +259,19 @@ type: text/vnd.tiddlywiki
   </div>
 
   <div style="margin-top:1em;">
-    <$button class="tc-btn-invisible tc-tiddlylink" style="color:red;">
-      [Delete Category]
-      <$action-confirm $message="Do you wish to delete this category and all its theses? THIS CANNOT BE UNDONE! It's highly recommended to create a backup of your wiki prior you delete anything. Your data is your responsibility.">
+    <$transclude $tiddler="$:/plugins/midorum/zest/templates/delete-confirm-block" 
+      qualifier=<<categoryTiddler>>
+      outsideDeleteButtonText="[Delete Category]"
+      insideDeleteButtonText="[Delete Category]"
+      insideCancelButtonText="[Cancel]"
+      warningText="WARNING: This will delete the category and all its theses. THIS CANNOT BE UNDONE!"
+    >
+      <$fill $name="deleteActions" >
         <$action-sendmessage $message="tm-zest-delete-category" id=<<categoryTiddler>>/>
         <$action-sendmessage $message="tm-close-tiddler"/>
         <$action-navigate $to="Domain"/>
-      </$action-confirm>
-    </$button>
+      </$fill>
+    </$transclude>
   </div>
 
 </$let>
