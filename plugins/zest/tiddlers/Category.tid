@@ -170,7 +170,7 @@ type: text/vnd.tiddlywiki
             </$button>
             <$button class="tc-btn-invisible tc-tiddlylink" style="margin-left:1em;color:red;">
               [Delete]
-              <$action-confirm $message="Do you wish to delete this thesis? That cannot be undone!">
+              <$action-confirm $message="Do you wish to delete this thesis? THIS CANNOT BE UNDONE! It's highly recommended to create a backup of your wiki prior you delete anything. Your data is your responsibility.">
                 <$action-sendmessage $message='tm-zest-delete-thesis' id=<<thesis>>/>
               </$action-confirm>
             </$button>
@@ -182,8 +182,10 @@ type: text/vnd.tiddlywiki
   </$list>
 
   <div style="margin-top:1em;">
-    <$let addThesisFormState="$:/state/zest/add-thesis-form-state">
-
+    <$let addThesisFormState="$:/state/zest/add-thesis-form-state"
+      correctStatementTag="$:/temp/zest/tag/correctStatement" incorrectStatementTag="$:/temp/zest/tag/incorrectStatement" 
+      tmpTiddlerBaseTitle="$:/temp/zest/holder"
+    >
       <$reveal type="match" stateTitle=<<addThesisFormState>> stateField="text" text="1" >
         <div class="zest-add-thesis-form" style="border:1px solid #ccc;padding:1em;">
           <div class="zest-wide-input">
@@ -193,6 +195,12 @@ type: text/vnd.tiddlywiki
               <$edit-text tiddler=<<addThesisFormState>> field="thesisText" default="" tag="textarea" style="width:100%;min-height:3em;"/>
             </label>
           </div>
+          <$transclude
+            $tiddler="$:/plugins/midorum/zest/templates/thesis-statements-editor"
+            tmpTiddlerBaseTitle=<<tmpTiddlerBaseTitle>>
+            correctStatementTag=<<correctStatementTag>>
+            incorrectStatementTag=<<incorrectStatementTag>>
+          />
           <div class="zest-wide-input" style="margin-top:0.7em;">
             <label>
               Thesis note:<br/>
@@ -201,20 +209,27 @@ type: text/vnd.tiddlywiki
             </label>
           </div>
           <div style="margin-top:1em;">
-            <$tiddler tiddler=<<addThesisFormState>>>
-              <$button class="tc-btn-invisible tc-tiddlylink">
-                [Create Thesis]
-                <$action-sendmessage $message="tm-zest-create-thesis"
-                  categoryId=<<categoryTiddler>>
-                  text={{!!thesisText}}
-                  note={{!!thesisNote}}
-                />
-                <$action-deletetiddler $tiddler=<<addThesisFormState>>/>
-              </$button>
-            </$tiddler>
+            <$set name="thesisCorrectStatements" filter="[tag<correctStatementTag>get[text]]">
+            <$set name="thesisIncorrectStatements" filter="[tag<incorrectStatementTag>get[text]]">
+              <$tiddler tiddler=<<addThesisFormState>>>
+                <$button class="tc-btn-invisible tc-tiddlylink">
+                  [Create Thesis]
+                  <$action-sendmessage $message="tm-zest-create-thesis"
+                    categoryId=<<categoryTiddler>>
+                    text={{!!thesisText}}
+                    note={{!!thesisNote}}
+                    thesisCorrectStatements=<<thesisCorrectStatements>>
+                    thesisIncorrectStatements=<<thesisIncorrectStatements>>
+                  />
+                  <$action-deletetiddler $tiddler=<<addThesisFormState>>/>
+                </$button>
+              </$tiddler>
+            </$set>
+            </$set>
             <$button class="tc-btn-invisible tc-tiddlylink" style="margin-left:1em;">
               [Cancel]
               <$action-deletetiddler $tiddler=<<addThesisFormState>>/>
+              <$action-deletetiddler $filter="[tag<correctStatementTag>] [tag<incorrectStatementTag>]" />
             </$button>
           </div>
         </div>
@@ -233,7 +248,7 @@ type: text/vnd.tiddlywiki
   <div style="margin-top:1em;">
     <$button class="tc-btn-invisible tc-tiddlylink" style="color:red;">
       [Delete Category]
-      <$action-confirm $message="Do you wish to delete this category and all its theses? This cannot be undone!">
+      <$action-confirm $message="Do you wish to delete this category and all its theses? THIS CANNOT BE UNDONE! It's highly recommended to create a backup of your wiki prior you delete anything. Your data is your responsibility.">
         <$action-sendmessage $message="tm-zest-delete-category" id=<<categoryTiddler>>/>
         <$action-sendmessage $message="tm-close-tiddler"/>
         <$action-navigate $to="Domain"/>
