@@ -94,6 +94,8 @@ type: text/vnd.tiddlywiki
           </div>
           <$transclude
             $tiddler="$:/plugins/midorum/zest/templates/thesis-statements-editor"
+            state=<<addCatFormState>>
+            showStatementsFormFieldName="showStatementsForm"
             tmpTiddlerBaseTitle=<<tmpTiddlerBaseTitle>>
             correctStatementTag=<<correctStatementTag>>
             incorrectStatementTag=<<incorrectStatementTag>>
@@ -137,6 +139,8 @@ type: text/vnd.tiddlywiki
       <$list filter="[<addCatFormState>is[missing]]">
         <$button class="tc-btn-invisible tc-tiddlylink">
           [Add Category]
+          <$action-deletetiddler $tiddler=<<addCatFormState>>/>
+          <$action-deletetiddler $filter="[tag<correctStatementTag>] [tag<incorrectStatementTag>]" />
           <$action-setfield $tiddler=<<addCatFormState>> text="1"/>
         </$button>
       </$list>
