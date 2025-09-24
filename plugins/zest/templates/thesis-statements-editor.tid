@@ -29,24 +29,26 @@ type: text/vnd.tiddlywiki
     <p>
         <div class="zest-wide-input" style="margin-top:0.7em;">
         <label>
-            Correct statements:<br/>
-            <span style="font-size:smaller;color:#888;">Add one or more correct statements about the thesis.</span>
-            <$list filter="[tag<correctStatementTag>]" variable="statementField">
-                <div style="display:flex;align-items:center;gap:0.5em;margin-top:0.3em;">
-                    <$edit-text tiddler=<<statementField>> tag="input" style="flex:1;"/>
-                    <$list filter="[tag<correctStatementTag>count[]compare:number:gt[1]]" variable="_">
-                        <$button class="tc-btn-invisible tc-tiddlylink">
-                        [Delete]
-                        <$action-deletetiddler $tiddler=<<statementField>> />
-                        </$button>
-                    </$list>
+            <div style="border:1px solid #4caf50;border-radius:4px;padding:0.7em 1em 1em 1em;margin-bottom:0.7em;">
+                Correct statements:<br/>
+                <span style="font-size:smaller;color:#888;">Add one or more correct statements about the thesis.</span>
+                <$list filter="[tag<correctStatementTag>]" variable="statementField">
+                    <div style="display:flex;align-items:center;gap:0.5em;margin-top:0.3em;">
+                        <$edit-text tiddler=<<statementField>> tag="input" style="flex:1;"/>
+                        <$list filter="[tag<correctStatementTag>count[]compare:number:gt[1]]" variable="_">
+                            <$button class="tc-btn-invisible tc-tiddlylink">
+                            [Delete]
+                            <$action-deletetiddler $tiddler=<<statementField>> />
+                            </$button>
+                        </$list>
+                    </div>
+                </$list>
+                <div style="margin-top=0.5em">
+                    <$button class="tc-btn-invisible tc-tiddlylink">
+                        [Add another correct statement]
+                        <$action-createtiddler $basetitle=<<tmpTiddlerBaseTitle>> tags=<<correctStatementTag>> />
+                    </$button>
                 </div>
-            </$list>
-            <div style="margin-top=0.5em">
-            <$button class="tc-btn-invisible tc-tiddlylink">
-                [Add another correct statement]
-                <$action-createtiddler $basetitle=<<tmpTiddlerBaseTitle>> tags=<<correctStatementTag>> />
-            </$button>
             </div>
         </label>
         </div>
@@ -55,24 +57,26 @@ type: text/vnd.tiddlywiki
     <p>
         <div class="zest-wide-input" style="margin-top:0.7em;">
         <label>
-            Incorrect statements:<br/>
-            <span style="font-size:smaller;color:#888;">Add one or more incorrect statements about the thesis.</span>
-            <$list filter="[tag<incorrectStatementTag>]" variable="statementField">
-                <div style="display:flex;align-items:center;gap:0.5em;margin-top:0.3em;">
-                    <$edit-text tiddler=<<statementField>> tag="input" style="flex:1;"/>
-                    <$list filter="[tag<incorrectStatementTag>count[]compare:number:gt[1]]" variable="_">
-                        <$button class="tc-btn-invisible tc-tiddlylink">
-                        [Delete]
-                        <$action-deletetiddler $tiddler=<<statementField>> />
-                        </$button>
-                    </$list>
+            <div style="border:1px solid #f44336;border-radius:4px;padding:0.7em 1em 1em 1em;margin-bottom:0.7em;">
+                Incorrect statements:<br/>
+                <span style="font-size:smaller;color:#888;">Add one or more incorrect statements about the thesis.</span>
+                <$list filter="[tag<incorrectStatementTag>]" variable="statementField">
+                    <div style="display:flex;align-items:center;gap:0.5em;margin-top:0.3em;">
+                        <$edit-text tiddler=<<statementField>> tag="input" style="flex:1;"/>
+                        <$list filter="[tag<incorrectStatementTag>count[]compare:number:gt[1]]" variable="_">
+                            <$button class="tc-btn-invisible tc-tiddlylink">
+                            [Delete]
+                            <$action-deletetiddler $tiddler=<<statementField>> />
+                            </$button>
+                        </$list>
+                    </div>
+                </$list>
+                <div style="margin-top=0.5em">
+                    <$button class="tc-btn-invisible tc-tiddlylink">
+                        [Add another incorrect statement]
+                        <$action-createtiddler $basetitle=<<tmpTiddlerBaseTitle>> tags=<<incorrectStatementTag>> />
+                    </$button>
                 </div>
-            </$list>
-            <div style="margin-top=0.5em">
-            <$button class="tc-btn-invisible tc-tiddlylink">
-                [Add another incorrect statement]
-                <$action-createtiddler $basetitle=<<tmpTiddlerBaseTitle>> tags=<<incorrectStatementTag>> />
-            </$button>
             </div>
         </label>
         </div>
