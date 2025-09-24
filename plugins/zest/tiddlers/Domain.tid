@@ -78,6 +78,7 @@ type: text/vnd.tiddlywiki
     >
       <$list filter="[<addCatFormState>get[text]match[1]]">
         <div class="zest-add-category-form" style="border:1px solid #ccc;padding:1em;">
+          <!-- New category name -->
           <div class="zest-wide-input">
             <label>
               Category name:<br/>
@@ -85,6 +86,24 @@ type: text/vnd.tiddlywiki
               <$edit-text tiddler=<<addCatFormState>> field="categoryName" default="" tag="input" />
             </label>
           </div>
+          <!-- Duplicate category name check -->
+          <$let catName={{{ [<addCatFormState>get[categoryName]] }}} >
+            <$list filter="[<catName>!is[blank]]" variable="_">
+            <$list filter="[tag[$:/zest/tags/category]tag<domainTiddler>field:text<catName>]" variable="existingCat">
+              <div style="margin:0.5em 0;color:yellow;">
+                A category with this name already exists in this domain.
+                <$button class="tc-btn-invisible tc-tiddlylink" style="margin-left:1em;">
+                  [Edit existing category]
+                  <$action-deletetiddler $tiddler=<<addCatFormState>>/>
+                  <$action-deletetiddler $filter="[tag<correctStatementTag>] [tag<incorrectStatementTag>]" />
+                  <$action-setfield $tiddler="$:/state/zest/current-category" text=<<existingCat>>/>
+                  <$action-navigate $to="Category"/>
+                </$button>
+              </div>
+            </$list>
+            </$list>
+          </$let>
+          <!-- The category first thesis text -->
           <div class="zest-wide-input" style="margin-top:0.7em;">
             <label>
               Thesis text:<br/>
@@ -92,6 +111,7 @@ type: text/vnd.tiddlywiki
               <$edit-text tiddler=<<addCatFormState>> field="thesisText" default="" tag="textarea" style="min-height:3em;"/>
             </label>
           </div>
+          <!-- The thesis possible statements -->
           <$transclude
             $tiddler="$:/plugins/midorum/zest/templates/thesis-statements-editor"
             state=<<addCatFormState>>
@@ -100,6 +120,7 @@ type: text/vnd.tiddlywiki
             correctStatementTag=<<correctStatementTag>>
             incorrectStatementTag=<<incorrectStatementTag>>
           />
+          <!-- The thesis possible note -->
           <div class="zest-wide-input" style="margin-top:0.7em;">
             <label>
               Thesis note:<br/>
@@ -107,6 +128,7 @@ type: text/vnd.tiddlywiki
               <$edit-text tiddler=<<addCatFormState>> field="thesisNote" default="" tag="textarea" style="min-height:2em;"/>
             </label>
           </div>
+          <!-- Create the category action or cancel -->
           <div style="margin-top:1em;">
             <$set name="thesisCorrectStatements" filter="[tag<correctStatementTag>get[text]]">
             <$set name="thesisIncorrectStatements" filter="[tag<incorrectStatementTag>get[text]]">
