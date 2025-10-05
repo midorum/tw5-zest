@@ -1,6 +1,16 @@
 title: Versions
 type: text/vnd.tiddlywiki
 
+!! 0.1.1
+
+* distinct visuallly correct and incorrect statemets blocks on the edit form
+* duplicate category name check
+* on-form delete confirmation
+* thesis statements support
+* fixed wikification for the question and answer templates
+* fixed wikification for complex descriptions
+* ability easily create a fully configured zest wiki
+
 !! 0.1.0
 
 * First working version of Zest plugin.
