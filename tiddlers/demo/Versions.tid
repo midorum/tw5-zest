@@ -1,6 +1,10 @@
 title: Versions
 type: text/vnd.tiddlywiki
 
+!! 0.1.2
+
+* sharing theses between several categories
+
 !! 0.1.1
 
 * distinct visuallly correct and incorrect statemets blocks on the edit form

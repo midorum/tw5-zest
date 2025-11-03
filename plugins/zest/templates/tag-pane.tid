@@ -9,12 +9,24 @@ type: text/vnd.tiddlywiki
     removeTagButton,
     addTagButton,
     addTagButtonName:"[add tag]",
+    isClickable
 )
 <$let palette={{$:/palette}} color={{{ [<palette>getindex[primary]] }}} background={{{ [<palette>getindex[background]] }}} >
     <$list filter=<<tagFilter>> variable="tag-ref">
         <span class="tc-tag-label" style="margin: 0 0.25em">
-            <$view tiddler=<<tag-ref>> field=<<tagDisplayFieldName>> format="text" />
-            <$list filter="[<removeTagButton>!is[blank]]" >
+            <$list filter="[<isClickable>!compare:string:eq[true]]" >
+                <$view tiddler=<<tag-ref>> field=<<tagDisplayFieldName>> format="text" />
+            </$list>
+            <$list filter="[<isClickable>compare:string:eq[true]]" >
+                <$button 
+                    tag='span' 
+                    style.cursor="pointer"
+                >
+                    <$view tiddler=<<tag-ref>> field=<<tagDisplayFieldName>> format="text" />
+                    <$slot $name="click-tag-action"/>
+                </$button>
+            </$list>
+            <$list filter="[<removeTagButton>compare:string:eq[true]]" >
                 <$button 
                     tag='span' 
                     class="tc-remove-tag-button" 
@@ -28,7 +40,7 @@ type: text/vnd.tiddlywiki
             </$list>
         </span>
     </$list>
-    <$list filter="[<addTagButton>!is[blank]]" >
+    <$list filter="[<addTagButton>compare:string:eq[true]]" >
         <span class="tc-tag-label" style=`margin:0 0.25em;background-color:transparent;border:solid thin $(color)$;color:$(color)$;`>
             <$button 
                 tag='span' 

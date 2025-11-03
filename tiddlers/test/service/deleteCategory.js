@@ -37,25 +37,40 @@ describe("The deleteCategory service", () => {
         expect(results[0]).toContain(expectedMessage);
     });
 
-    it("should delete the category and all linked theses", () => {
+    it("should delete the category and all theses that are linked only to this category and detach other linked theses", () => {
+        // consoleDebugSpy.and.callThrough();
         const options = utils.setupWiki();
-        const domain = options.push.domain({
-            name: 'Domain1', categories: [
-                { name: 'Category1', theses: [{ text: 'Thesis1' }, { text: 'Thesis2' }] },
-                { name: 'Category2', theses: [{ text: 'Thesis2' }] }
-            ]
+        const domains = options.push.domains([
+            { name: "Domain1", description: "Domain1 description" },
+            { name: "Domain2", description: "Domain2 description" },
+        ]);
+        const categories = options.push.categories([
+            { name: "Category1", domains: domains },
+            { name: "Category2", domains: domains.slice(1) }
+        ])
+        const theses = options.push.theses([
+            { text: "Thesis1", note: "Thesis1 note", categories: categories.slice(0, 1) },
+            { text: "Thesis2", note: "Thesis2 note", categories: categories },
+            { text: "Thesis3", note: "Thesis3 note", categories: categories.slice(1) }
+        ])
+        options.wiki.filterTiddlers(`[tag[${options.tags.domain}]]`).forEach(domain => {
+            console.debug(options.wiki.getTiddler(domain));
         });
-        const categoryId = domain.categories[0].title;
-        const linkedThesis1 = domain.categories[0].theses[0].title;
-        const linkedThesis2 = domain.categories[0].theses[1].title;
-        const thesisTag = options.tags.thesis;
-        expect(options.wiki.filterTiddlers(`[tag[${thesisTag}]tag[${categoryId}]]`).length).toEqual(2);
-        const params = { id: categoryId };
+        options.wiki.filterTiddlers(`[tag[${options.tags.category}]]`).forEach(category => {
+            console.debug(options.wiki.getTiddler(category));
+        });
+        options.wiki.filterTiddlers(`[tag[${options.tags.thesis}]]`).forEach(thesis => {
+            console.debug(options.wiki.getTiddler(thesis));
+        });
+        expect(options.wiki.filterTiddlers(`[tag[${options.tags.thesis}]tag[${categories[0].title}]]`).length).toEqual(2);
+        expect(options.wiki.filterTiddlers(`[tag[${options.tags.thesis}]tag[${categories[1].title}]]`).length).toEqual(2);
+        const params = { id: categories[0].title };
         messageHandler.deleteCategory(params, options.widget, options.env);
-        const catTiddler = options.wiki.getTiddler(categoryId);
-        expect(catTiddler).toBeUndefined();
-        expect(options.wiki.filterTiddlers(`[tag[${thesisTag}]tag[${categoryId}]]`).length).toBe(0);
-        expect(options.wiki.getTiddler(linkedThesis1)).toBeUndefined();
-        expect(options.wiki.getTiddler(linkedThesis2)).toBeUndefined();
+        expect(options.wiki.getTiddler(categories[0].title)).toBeUndefined();
+        expect(options.wiki.getTiddler(categories[1].title)).toBeDefined();
+        expect(options.wiki.filterTiddlers(`[tag[${options.tags.thesis}]tag[${categories[0].title}]]`).length).toBe(0);
+        expect(options.wiki.getTiddler(theses[0].title)).toBeUndefined();
+        expect(options.wiki.getTiddler(theses[1].title)).toBeDefined();
+        expect(options.wiki.getTiddler(theses[2].title)).toBeDefined();
     });
 });

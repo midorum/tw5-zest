@@ -60,12 +60,7 @@ type: text/vnd.tiddlywiki
         <$button
           class="tc-btn-invisible tc-tiddlylink" >
           <$view tiddler=<<cat>> field="text"/>
-          <!-- reset category form state (tight coupling) -->
-          <$action-deletetiddler $tiddler="$:/state/zest/thesis-edit" />
-          <$action-deletetiddler $tiddler="$:/temp/zest/thesis-edit" />
-          <!-- go to the category form -->
-          <$action-setfield $tiddler="$:/state/zest/current-category" text=<<cat>>/>
-          <$action-navigate $to="Category"/>
+          <$transclude $tiddler="$:/plugins/midorum/zest/templates/navigate-to-category" ref=<<cat>> />
         </$button>
       </div>
     </$list>
@@ -106,7 +101,7 @@ type: text/vnd.tiddlywiki
           <!-- The category first thesis text -->
           <div class="zest-wide-input" style="margin-top:0.7em;">
             <label>
-              Thesis text:<br/>
+              Thesis text (optional):<br/>
               <span style="font-size:smaller;color:#888;">Enter a first thesis that describes this category.</span><br/>
               <$edit-text tiddler=<<addCatFormState>> field="thesisText" default="" tag="textarea" style="min-height:3em;"/>
             </label>
@@ -123,7 +118,7 @@ type: text/vnd.tiddlywiki
           <!-- The thesis possible note -->
           <div class="zest-wide-input" style="margin-top:0.7em;">
             <label>
-              Thesis note:<br/>
+              Thesis note (optional):<br/>
               <span style="font-size:smaller;color:#888;">Optional: add a note to the thesis.</span><br/>
               <$edit-text tiddler=<<addCatFormState>> field="thesisNote" default="" tag="textarea" style="min-height:2em;"/>
             </label>

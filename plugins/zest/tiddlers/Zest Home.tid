@@ -6,27 +6,16 @@ type: text/vnd.tiddlywiki
 <div class="zest-domains-list">
   <$list filter="[tag[$:/zest/tags/domain]]" variable="domain" emptyMessage="There are no domains yet.">
     <div>
-      <$button
-        class="tc-btn-invisible tc-tiddlylink" >
-        <$action-setfield $tiddler="$:/state/zest/current-domain" text=<<domain>>/>
-        <$action-navigate $to="Domain"/>
+      <$button class="tc-btn-invisible tc-tiddlylink" >
         <$view tiddler=<<domain>> field="name"/>
+        <$transclude $tiddler="$:/plugins/midorum/zest/templates/navigate-to-domain" ref=<<domain>> />
       </$button>
       <$button
         class="tc-btn-invisible tc-tiddlylink" style="margin-left:0.5em"
         tooltip="Learn categories in this domain"
       >
-        <!-- reset learning session state (tight coupling) -->
-        <$list filter="[[$:/state/zest/session]!is[missing]]" >
-          <$action-sendmessage $message="tm-srs-delete-session" ref="$:/state/zest/session" />
-          <$action-deletetiddler $tiddler="$:/state/zest/session" />
-          <$action-deletetiddler $tiddler="$:/temp/srs/state/buttonsDisabled" />
-          <$action-deletetiddler $tiddler="$:/state/zest/SrsLearningSessionDynamicTemplate" />
-        </$list>
-        <!-- go to the learning session form -->
-        <$action-setfield $tiddler="$:/state/zest/current-domain" text=<<domain>>/>
-        <$action-navigate $to="Learning Session"/>
         {{$:/core/images/help}}
+        <$transclude $tiddler="$:/plugins/midorum/zest/templates/navigate-to-learning" domain=<<domain>> />
       </$button>
     </div>
   </$list>

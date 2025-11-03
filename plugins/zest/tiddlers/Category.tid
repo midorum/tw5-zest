@@ -2,13 +2,38 @@ title: Category
 type: text/vnd.tiddlywiki
 
 \whitespace trim
-<$let categoryTiddler={{$:/state/zest/current-category}}>
+<$let categoryTiddler={{$:/state/zest/current-category}} domainTiddler={{$:/state/zest/current-domain}} >
   <$let editState="$:/state/zest/category-edit" editTmp="$:/temp/zest/category-edit">
 
     <$reveal type="match" stateTitle=<<editState>> stateField="text" text="1" >
         <div class="zest-wide-input">
           <$edit-text tiddler=<<editTmp>> field="text" tag="input" style="font-size:1.2em;width:100%;"/>
         </div>
+        <p>
+          <$transclude $tiddler="$:/plugins/midorum/zest/templates/tag-pane"
+              qualifier=<<categoryTiddler>>
+              tagFilter="[<categoryTiddler>tags[]tag[$:/zest/tags/domain]]"
+              tagDisplayFieldName="name"
+              removeTagButton="true"
+              addTagButton="true"
+              addTagButtonName="[Link Domain]"
+              mode="block"
+          >
+            <$fill $name="remove-tag-action">
+              <$action-confirm $message="Do you wish to detach the category from this domain?" >
+                <$action-sendmessage $message="tm-zest-detach-category" categoryId=<<categoryTiddler>> domainId=<<tag-ref>> />
+              </$action-confirm>
+            </$fill>
+            <$fill $name="popup-template">
+              <$list filter="[tag[$:/zest/tags/domain]]" variable="selected">
+                  <$button class="tc-btn-invisible tc-tiddlylink">
+                      <$view tiddler=<<selected>> field="name" format="text" />
+                      <$action-sendmessage $message="tm-zest-attach-category" categoryId=<<categoryTiddler>> domainId=<<selected>> />
+                  </$button>
+              </$list>
+            </$fill>
+          </$transclude>
+        </p>
         <div style="margin-top:0.5em;">
             <$button class="tc-btn-invisible tc-tiddlylink" >
                 [Save]
@@ -37,23 +62,13 @@ type: text/vnd.tiddlywiki
               qualifier=<<categoryTiddler>>
               tagFilter="[<categoryTiddler>tags[]tag[$:/zest/tags/domain]]"
               tagDisplayFieldName="name"
-              removeTagButton="true"
-              addTagButton="true"
-              addTagButtonName="[Link Domain]"
+              removeTagButton="false"
+              addTagButton="false"
+              isClickable="true"
               mode="block"
           >
-            <$fill $name="remove-tag-action">
-              <$action-confirm $message="Do you wish to detach the category from this domain?" >
-                <$action-sendmessage $message="tm-zest-detach-category" categoryId=<<categoryTiddler>> domainId=<<tag-ref>> />
-              </$action-confirm>
-            </$fill>
-            <$fill $name="popup-template">
-              <$list filter="[tag[$:/zest/tags/domain]]" variable="selected">
-                  <$button class="tc-btn-invisible tc-tiddlylink">
-                      <$view tiddler=<<selected>> field="name" format="text" />
-                      <$action-sendmessage $message="tm-zest-attach-category" categoryId=<<categoryTiddler>> domainId=<<selected>> />
-                  </$button>
-              </$list>
+            <$fill $name="click-tag-action">
+              <$transclude $tiddler="$:/plugins/midorum/zest/templates/navigate-to-domain" ref=<<tag-ref>> />
             </$fill>
           </$transclude>
         </p>
@@ -99,6 +114,31 @@ type: text/vnd.tiddlywiki
               <$edit-text tiddler=<<thesisEditTmp>> field="note" tag="textarea" style="width:100%;min-height:2em;"/>
             </label>
           </div>
+          <p>
+            <$transclude $tiddler="$:/plugins/midorum/zest/templates/tag-pane"
+                qualifier=<<thesis>>
+                tagFilter="[<thesis>tags[]tag[$:/zest/tags/category]]"
+                tagDisplayFieldName="text"
+                removeTagButton="true"
+                addTagButton="true"
+                addTagButtonName="[Link Category]"
+                mode="block"
+            >
+              <$fill $name="remove-tag-action">
+                <$action-confirm $message="Do you wish to detach this thesis from the category?" >
+                  <$action-sendmessage $message="tm-zest-detach-thesis" thesisId=<<thesis>> categoryId=<<tag-ref>> />
+                </$action-confirm>
+              </$fill>
+              <$fill $name="popup-template">
+                <$list filter="[tag[$:/zest/tags/category]tag<domainTiddler>] =[tag[$:/zest/tags/category]!tag<domainTiddler>]" variable="selected">
+                    <$button class="tc-btn-invisible tc-tiddlylink">
+                        <$view tiddler=<<selected>> field="text" format="text" />
+                        <$action-sendmessage $message="tm-zest-attach-thesis" thesisId=<<thesis>> categoryId=<<selected>> />
+                    </$button>
+                </$list>
+              </$fill>
+            </$transclude>
+          </p>
           <div style="margin-top:0.5em;">
             <$button class="tc-btn-invisible tc-tiddlylink">
               [Save]
@@ -139,6 +179,21 @@ type: text/vnd.tiddlywiki
           <$reveal type="match" stateTitle=<<thesisNoteState>> stateIndex=<<thesis>> text="1" >
             <p style="color:grey;">
               <$transclude $tiddler=<<thesis>> $field="note" $mode="block"/>
+            </p>
+            <p>
+              <$transclude $tiddler="$:/plugins/midorum/zest/templates/tag-pane"
+                  qualifier=<<thesis>>
+                  tagFilter="[<thesis>tags[]tag[$:/zest/tags/category]]"
+                  tagDisplayFieldName="text"
+                  removeTagButton="false"
+                  addTagButton="false"
+                  isClickable="true"
+                  mode="block"
+              >
+                <$fill $name="click-tag-action">
+                  <$transclude $tiddler="$:/plugins/midorum/zest/templates/navigate-to-category" ref=<<tag-ref>> />
+                </$fill>
+              </$transclude>
             </p>
           </$reveal>
           <div style="margin-top:0.5em;">
@@ -264,7 +319,7 @@ type: text/vnd.tiddlywiki
       outsideDeleteButtonText="[Delete Category]"
       insideDeleteButtonText="[Delete Category]"
       insideCancelButtonText="[Cancel]"
-      warningText="WARNING: This will delete the category and all its theses. THIS CANNOT BE UNDONE!"
+      warningText="WARNING: This will delete the category and all its exclusive theses. THIS CANNOT BE UNDONE!"
     >
       <$fill $name="deleteActions" >
         <$action-sendmessage $message="tm-zest-delete-category" id=<<categoryTiddler>>/>

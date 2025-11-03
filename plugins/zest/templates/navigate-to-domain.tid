@@ -1,0 +1,9 @@
+title: $:/plugins/midorum/zest/templates/navigate-to-domain
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+\parameters (
+    ref
+)
+<$action-setfield $tiddler="$:/state/zest/current-domain" text=<<ref>>/>
+<$action-navigate $to="Domain"/>
