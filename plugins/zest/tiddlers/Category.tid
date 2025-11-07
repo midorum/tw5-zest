@@ -17,6 +17,9 @@ type: text/vnd.tiddlywiki
               removeTagButton="true"
               addTagButton="true"
               addTagButtonName="[Link Domain]"
+              defaultListFilter="[tag[$:/zest/tags/domain]]"
+              searchFilter="[tag[$:/zest/tags/domain]regexp:name<pattern>]"
+              itemFieldName="name"
               mode="block"
           >
             <$fill $name="remove-tag-action">
@@ -24,13 +27,8 @@ type: text/vnd.tiddlywiki
                 <$action-sendmessage $message="tm-zest-detach-category" categoryId=<<categoryTiddler>> domainId=<<tag-ref>> />
               </$action-confirm>
             </$fill>
-            <$fill $name="popup-template">
-              <$list filter="[tag[$:/zest/tags/domain]]" variable="selected">
-                  <$button class="tc-btn-invisible tc-tiddlylink">
-                      <$view tiddler=<<selected>> field="name" format="text" />
-                      <$action-sendmessage $message="tm-zest-attach-category" categoryId=<<categoryTiddler>> domainId=<<selected>> />
-                  </$button>
-              </$list>
+            <$fill $name="item-select-action">
+              <$action-sendmessage $message="tm-zest-attach-category" categoryId=<<categoryTiddler>> domainId=<<selected>> />
             </$fill>
           </$transclude>
         </p>
@@ -122,6 +120,9 @@ type: text/vnd.tiddlywiki
                 removeTagButton="true"
                 addTagButton="true"
                 addTagButtonName="[Link Category]"
+                defaultListFilter="[tag[$:/zest/tags/category]tag<domainTiddler>] =[tag[$:/zest/tags/category]!tag<domainTiddler>]"
+                searchFilter="[tag[$:/zest/tags/category]regexp:text<pattern>]"
+                itemFieldName="text"
                 mode="block"
             >
               <$fill $name="remove-tag-action">
@@ -129,13 +130,8 @@ type: text/vnd.tiddlywiki
                   <$action-sendmessage $message="tm-zest-detach-thesis" thesisId=<<thesis>> categoryId=<<tag-ref>> />
                 </$action-confirm>
               </$fill>
-              <$fill $name="popup-template">
-                <$list filter="[tag[$:/zest/tags/category]tag<domainTiddler>] =[tag[$:/zest/tags/category]!tag<domainTiddler>]" variable="selected">
-                    <$button class="tc-btn-invisible tc-tiddlylink">
-                        <$view tiddler=<<selected>> field="text" format="text" />
-                        <$action-sendmessage $message="tm-zest-attach-thesis" thesisId=<<thesis>> categoryId=<<selected>> />
-                    </$button>
-                </$list>
+              <$fill $name="item-select-action">
+                <$action-sendmessage $message="tm-zest-attach-thesis" thesisId=<<thesis>> categoryId=<<selected>> />
               </$fill>
             </$transclude>
           </p>

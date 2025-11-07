@@ -5,3 +5,7 @@
 .zest-wide-input textarea {
   width: 100%;
 }
+
+.tc-drop-down input {
+  margin: 0 14px 0 14px;
+}

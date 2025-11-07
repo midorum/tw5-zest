@@ -9,7 +9,13 @@ type: text/vnd.tiddlywiki
     removeTagButton,
     addTagButton,
     addTagButtonName:"[add tag]",
-    isClickable
+    isClickable,
+    enablePopupTemplate,
+    focusSelectFromStart:0, // set -1 to disable
+    focusSelectFromEnd:0, // set -1 to disable
+    defaultListFilter:"[is[tiddler]]",
+    searchFilter:"[is[tiddler]regexp<pattern>]",
+    itemFieldName:"title"
 )
 <$let palette={{$:/palette}} color={{{ [<palette>getindex[primary]] }}} background={{{ [<palette>getindex[background]] }}} >
     <$list filter=<<tagFilter>> variable="tag-ref">
@@ -49,7 +55,40 @@ type: text/vnd.tiddlywiki
             ><<addTagButtonName>></$button>
         </span>
         <$reveal state=`$:/state/popup/tag-pane-template/$(qualifier)$` type="popup" position="below" animate="yes" class="tc-drop-down" >
-            <$slot $name="popup-template"/>
+            <$list filter="[<enablePopupTemplate>compare:string:eq[true]]" >
+                <$slot $name="popup-template"/>
+            </$list>
+            <$list filter="[<enablePopupTemplate>!compare:string:eq[true]]" >
+                <$let searchState=`$:/state/popup/tag-pane-search/$(qualifier)$` >
+                    <$edit-text tiddler=<<searchState>>
+                        field="text"
+                        tag="input"
+                        focus="true"
+                        focusSelectFromStart=<<focusSelectFromStart>>
+                        focusSelectFromEnd=<<focusSelectFromEnd>>
+                    />
+                    <$set name=predicate tiddler=<<searchState>> field="text" >
+                        <$list filter="[<predicate>is[blank]]" >
+                            <$list filter=<<defaultListFilter>> variable="selected">
+                                <$button class="tc-btn-invisible tc-tiddlylink">
+                                    <$view tiddler=<<selected>> field=<<itemFieldName>> format="text" />
+                                    <$slot $name="item-select-action" />
+                                </$button>
+                            </$list>
+                        </$list>
+                        <$list filter="[<predicate>!is[blank]]" >
+                            <$let pattern=`(?i)$(predicate)$` >
+                                <$list filter=<<searchFilter>> variable="selected">
+                                    <$button class="tc-btn-invisible tc-tiddlylink">
+                                        <$view tiddler=<<selected>> field=<<itemFieldName>> format="text" />
+                                        <$slot $name="item-select-action" />
+                                    </$button>
+                                </$list>
+                            </$let>
+                        </$list>
+                    </$set>
+                </$let>
+            </$list>
         </$reveal>
     </$list>
 </$let>
