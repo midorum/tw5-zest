@@ -25,19 +25,6 @@
 				},
 				"type": "application/javascript"
 			}
-		},
-		{
-			"path": "./macro",
-			"filesRegExp": "^.*$",
-			"isTiddlerFile": true,
-			"fields": {
-				"tags": "$:/tags/test-spec",
-				"title": {
-					"source": "filename",
-					"prefix": "test/macro/"
-				},
-				"type": "application/javascript"
-			}
 		}
 	]
 }

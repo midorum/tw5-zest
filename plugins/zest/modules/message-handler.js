@@ -15,21 +15,25 @@ Handling zest messages.
   const utils = require("$:/plugins/midorum/zest/modules/utils.js").zestUtils;
 
   function validateThesisStatements(correctStatements, incorrectStatements) {
-    const result = {};
     if (!correctStatements && !incorrectStatements) {
-      return result;
+      return {};
     }
     if (!correctStatements || !incorrectStatements) {
-      throw new Error("Both thesis correct statements and incorrect statements must be provided together");
+      return {
+        error: "Both thesis correct statements and incorrect statements must be provided together"
+      };
     }
     const csl = utils.parseStringList(correctStatements, false);
     const isl = utils.parseStringList(incorrectStatements, false);
     if (csl.length === 0 || isl.length === 0) {
-      throw new Error("Both thesis correct statements and incorrect statements must be non-empty arrays");
+      return {
+        error: "Both thesis correct statements and incorrect statements must be non-empty arrays"
+      };
     }
-    result.correct = utils.stringifyList(csl);
-    result.incorrect = utils.stringifyList(isl);
-    return result;
+    return {
+      correct: utils.stringifyList(csl),
+      incorrect: utils.stringifyList(isl)
+    };
   }
 
   /**
@@ -161,8 +165,8 @@ Handling zest messages.
    * @param {Object} params - Parameters object.
    * @param {string} params.name - Category name. (required)
    * @param {string} params.domainId - Domain tiddler id. (required)
-   * @param {string} params.thesisText - Thesis text. (required)
-   * @param {string} [params.thesisNote] - Thesis note.
+   * @param {string} [params.thesisText] - Thesis text. (optional)
+   * @param {string} [params.thesisNote] - Thesis note. (optional)
    * @param {Array} [params.thesisCorrectStatements] - Optional array of correct statements for thesis.
    * @param {Array} [params.thesisIncorrectStatements] - Optional array of incorrect statements for thesis.
    * @throws Alerts if required fields are missing or domain not found, or statement validation fails.
@@ -188,21 +192,15 @@ Handling zest messages.
       context.logger.alert(utils.formatString(alertMsg, "domain id"));
       return;
     }
-    if (!thesisText) {
-      context.logger.alert(utils.formatString(alertMsg, "thesis text"));
+    const thesisStatements = validateThesisStatements(
+      utils.trimToUndefined(params.thesisCorrectStatements),
+      utils.trimToUndefined(params.thesisIncorrectStatements));
+    if (thesisStatements.error) {
+      context.logger.alert(thesisStatements.error);
       return;
     }
-    const thesisStatements = (() => {
-      try {
-        return validateThesisStatements(
-          utils.trimToUndefined(params.thesisCorrectStatements),
-          utils.trimToUndefined(params.thesisIncorrectStatements));
-      } catch (e) {
-        context.logger.alert(e.message);
-        return undefined;
-      }
-    })();
-    if (!thesisStatements) {
+    if ((thesisNote || thesisStatements.correct || thesisStatements.incorrect) && !thesisText) {
+      context.logger.alert(utils.formatString(alertMsg, "thesis text"));
       return;
     }
     // Check domain exists
@@ -222,6 +220,9 @@ Handling zest messages.
     };
     context.wikiUtils.addTiddler(categoryFields);
     // Create thesis
+    if (!thesisText) {
+      return;
+    }
     const thesisPrefix = context.prefixes.thesis;
     const thesisTag = context.tags.thesis;
     const thesisTitle = context.wikiUtils.generateNewInternalTitle(thesisPrefix);
@@ -362,7 +363,7 @@ Handling zest messages.
   };
 
   /**
-   * Delete a category and all related theses.
+   * Delete a category and all theses that are linked only to this category. Detach other linked theses from this category.
    * @param {Object} params - Parameters object.
    * @param {string} params.id - Category tiddler id. (required)
    * @throws Alerts if id is missing or category not found.
@@ -373,6 +374,7 @@ Handling zest messages.
       env: env,
       logger: new $tw.utils.Logger("Zest:deleteCategory"),
       tags: $tw.wiki.getTiddlerData("$:/plugins/midorum/zest/data/tags", []),
+      prefixes: $tw.wiki.getTiddlerData("$:/plugins/midorum/zest/data/prefixes", []),
     };
     const categoryId = utils.trimToUndefined(params.id);
     if (!categoryId) {
@@ -384,12 +386,25 @@ Handling zest messages.
       context.logger.alert("Category not found");
       return;
     }
-    // Find and delete all theses linked to this category
+    // Find theses that reference this category. For each thesis:
+    // - if it is linked to more than one category, only detach this category
+    // - if it is linked exclusively to this category, delete the thesis
     const thesisTag = context.tags.thesis;
     const linkedTheses = context.wikiUtils.filterTiddlers(`[tag[${thesisTag}]tag[${categoryId}]]`);
+    const categoryPrefix = context.prefixes.category;
     for (let thesisTitle of linkedTheses) {
       const thesisTiddler = context.wikiUtils.withTiddler(thesisTitle);
-      if (thesisTiddler.exists()) {
+      if (!thesisTiddler.exists()) {
+        continue;
+      }
+      const thesisTags = thesisTiddler.getTiddlerTagsShallowCopy();
+      // Count how many category tags are present on the thesis
+      const linkedCategoryTags = thesisTags.filter(tag => tag.startsWith(categoryPrefix));
+      if (linkedCategoryTags.length > 1) {
+        // More than one category linked: remove only the deleted category from tags
+        thesisTiddler.doNotInvokeSequentiallyOnSameTiddler.deleteTagsToTiddler([categoryId]);
+      } else {
+        // Only linked to this category: delete the thesis
         thesisTiddler.doNotInvokeSequentiallyOnSameTiddler.deleteTiddler();
       }
     }
@@ -426,17 +441,11 @@ Handling zest messages.
       context.logger.alert("Thesis text cannot be empty");
       return;
     }
-    const thesisStatements = (() => {
-      try {
-        return validateThesisStatements(
-          utils.trimToUndefined(params.correctStatements),
-          utils.trimToUndefined(params.incorrectStatements));
-      } catch (e) {
-        context.logger.alert(e.message);
-        return undefined;
-      }
-    })();
-    if (thesisStatements === undefined) {
+    const thesisStatements = validateThesisStatements(
+      utils.trimToUndefined(params.correctStatements),
+      utils.trimToUndefined(params.incorrectStatements));
+    if (thesisStatements.error) {
+      context.logger.alert(thesisStatements.error);
       return;
     }
     const categoryTiddler = context.wikiUtils.withTiddler(categoryId);
@@ -493,17 +502,11 @@ Handling zest messages.
       context.logger.alert("Thesis text cannot be empty");
       return;
     }
-    const thesisStatements = (() => {
-      try {
-        return validateThesisStatements(
-          utils.trimToUndefined(params.correctStatements),
-          utils.trimToUndefined(params.incorrectStatements));
-      } catch (e) {
-        context.logger.alert(e.message);
-        return undefined;
-      }
-    })();
-    if (thesisStatements === undefined) {
+    const thesisStatements = validateThesisStatements(
+      utils.trimToUndefined(params.correctStatements),
+      utils.trimToUndefined(params.incorrectStatements));
+    if (thesisStatements.error) {
+      context.logger.alert(thesisStatements.error);
       return;
     }
     const updateFields = {};
@@ -524,10 +527,99 @@ Handling zest messages.
   };
 
   /**
-   * Delete a thesis if it is not the last for the category.
+   * Attach a thesis to an existing category.
+   * @param {Object} params - Parameters object.
+   * @param {string} params.thesisId - Thesis tiddler id. (required)
+   * @param {string} params.categoryId - Category tiddler id. (required)
+   * @throws Alerts if ids are missing, tiddlers not found, or thesis already linked to category.
+   */
+  exports.attachThesis = function (params, widget, env) {
+    const context = {
+      wikiUtils: utils.getWikiUtils(widget.wiki),
+      env: env,
+      logger: new $tw.utils.Logger("Zest:attachThesis"),
+      tags: $tw.wiki.getTiddlerData("$:/plugins/midorum/zest/data/tags", []),
+    };
+    const thesisId = utils.trimToUndefined(params.thesisId);
+    const categoryId = utils.trimToUndefined(params.categoryId);
+    if (!thesisId) {
+      context.logger.alert("Thesis id is required");
+      return;
+    }
+    if (!categoryId) {
+      context.logger.alert("Category id is required");
+      return;
+    }
+    const thesisTiddler = context.wikiUtils.withTiddler(thesisId);
+    if (!thesisTiddler.exists()) {
+      context.logger.alert("Thesis not found");
+      return;
+    }
+    const categoryTiddler = context.wikiUtils.withTiddler(categoryId);
+    if (!categoryTiddler.exists()) {
+      context.logger.alert("Category not found");
+      return;
+    }
+    const tags = thesisTiddler.getTiddlerTagsShallowCopy();
+    if (!tags.includes(categoryId)) {
+      thesisTiddler.doNotInvokeSequentiallyOnSameTiddler.updateTiddler({ tags: tags.concat([categoryId]) });
+    }
+  }
+
+  /**
+   * Detach a thesis from an existing category.
+   * @param {Object} params - Parameters object.
+   * @param {string} params.thesisId - Thesis tiddler id. (required)
+   * @param {string} params.categoryId - Category tiddler id. (required)
+   * @throws Alerts if ids are missing, tiddlers not found, thesis not linked to category, or detaching would leave the thesis without any categories.
+   */
+  exports.detachThesis = function (params, widget, env) {
+    const context = {
+      wikiUtils: utils.getWikiUtils(widget.wiki),
+      env: env,
+      logger: new $tw.utils.Logger("Zest:detachThesis"),
+      tags: $tw.wiki.getTiddlerData("$:/plugins/midorum/zest/data/tags", []),
+      prefixes: $tw.wiki.getTiddlerData("$:/plugins/midorum/zest/data/prefixes", []),
+    };
+    const thesisId = utils.trimToUndefined(params.thesisId);
+    const categoryId = utils.trimToUndefined(params.categoryId);
+    if (!thesisId) {
+      context.logger.alert("Thesis id is required");
+      return;
+    }
+    if (!categoryId) {
+      context.logger.alert("Category id is required");
+      return;
+    }
+    const thesisTiddler = context.wikiUtils.withTiddler(thesisId);
+    if (!thesisTiddler.exists()) {
+      context.logger.alert("Thesis not found");
+      return;
+    }
+    const categoryTiddler = context.wikiUtils.withTiddler(categoryId);
+    if (!categoryTiddler.exists()) {
+      context.logger.alert("Category not found");
+      return;
+    }
+    const tags = thesisTiddler.getTiddlerTagsShallowCopy();
+    if (!tags.includes(categoryId)) {
+      context.logger.alert("Thesis is not linked to this category");
+      return;
+    }
+    const categoryPrefix = context.prefixes.category;
+    const otherLinkedCategories = tags.filter(tag => tag != categoryId && tag.startsWith(categoryPrefix));
+    if (otherLinkedCategories.length < 1) {
+      context.logger.alert("Cannot detach: thesis must be linked to at least one category");
+      return;
+    }
+    thesisTiddler.doNotInvokeSequentiallyOnSameTiddler.deleteTagsToTiddler([categoryId]);
+  }
+
+  /**
+   * Delete a thesis.
    * @param {Object} params - Parameters object.
    * @param {string} params.id - Thesis tiddler id. (required)
-   * @throws Alerts if id is missing, thesis not found, related category not found, or it is the last thesis for the category.
+   * @throws Alerts if id is missing, or thesis not found.
    */
   exports.deleteThesis = function (params, widget, env) {
     const context = {
@@ -545,18 +637,6 @@ Handling zest messages.
     const thesisTiddler = context.wikiUtils.withTiddler(thesisId);
     if (!thesisTiddler.exists()) {
       context.logger.alert("Thesis not found");
-      return;
-    }
-    const tags = thesisTiddler.getTiddlerTagsShallowCopy();
-    const thesisTag = context.tags.thesis;
-    const categoryId = tags.find(tag => tag.startsWith(context.prefixes.category));
-    if (!categoryId) {
-      context.logger.alert("Related category not found");
-      return;
-    }
-    const linkedTheses = context.wikiUtils.filterTiddlers(`[tag[${thesisTag}]tag[${categoryId}]]`);
-    if (linkedTheses.length <= 1) {
-      context.logger.alert("Cannot delete the last thesis for the category");
       return;
     }
     thesisTiddler.doNotInvokeSequentiallyOnSameTiddler.deleteTiddler();

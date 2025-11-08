@@ -1,0 +1,14 @@
+title: $:/plugins/midorum/zest/templates/navigate-to-category
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+\parameters (
+    ref
+)
+<!-- reset category form state (tight coupling) -->
+<$action-deletetiddler $tiddler="$:/temp/zest/thesis-edit-state" />
+<$action-deletetiddler $tiddler="$:/temp/zest/thesis-edit" />
+<$action-deletetiddler $tiddler="$:/temp/zest/add-thesis-form-state" />
+<!-- go to the category form -->
+<$action-setfield $tiddler="$:/state/zest/current-category" text=<<ref>>/>
+<$action-navigate $to="Category"/>

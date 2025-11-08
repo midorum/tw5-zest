@@ -58,15 +58,15 @@ const Pusher = function (wiki, tags, prefixes) {
         return category;
     }
 
-    function createThesis(text, note, correctStatements, incorrectStatements, categoryId, idx) {
+    function createThesis(text, note, correctStatements, incorrectStatements, categoryIds, idx) {
         if (!text) throw new Error("text is required");
-        if (!categoryId) throw new Error("categoryId is required");
-        const thesisTitle = `${prefixes.thesis}${categoryId.substring(prefixes.category.length)}_thesis_${idx || 0}`;
+        if (!categoryIds || !Array.isArray(categoryIds) || categoryIds.length === 0) throw new Error("categoryIds is required");
+        const thesisTitle = `${prefixes.thesis}thesis_${idx || 0}`;
         const thesis = {
             title: thesisTitle,
             text: text,
             note: note,
-            tags: [tags.thesis, categoryId]
+            tags: [tags.thesis, ...categoryIds]
         };
         if (correctStatements) {
             thesis["correct-statements"] = $tw.utils.stringifyList(correctStatements);
@@ -111,7 +111,7 @@ const Pusher = function (wiki, tags, prefixes) {
                     }
                     category.theses = [];
                     cat.theses.forEach((thesis, idx) => {
-                        category.theses.push(createThesis(thesis.text, thesis.note, thesis.correctStatements, thesis.incorrectStatements, category.title, idx));
+                        category.theses.push(createThesis(thesis.text, thesis.note, thesis.correctStatements, thesis.incorrectStatements, [category.title], idx));
                     });
                 });
             }
@@ -119,6 +119,42 @@ const Pusher = function (wiki, tags, prefixes) {
                 domain: domain,
                 categories: categories
             };
+        },
+        domains: function (domains) {
+            if (!Array.isArray(domains)) {
+                throw new Error("domains is required");
+            }
+            const result = [];
+            domains.forEach((domain) => {
+                result.push(createDomain(domain.name, domain.description));
+            });
+            return result;
+        },
+        categories: function (categories) {
+            if (!Array.isArray(categories)) {
+                throw new Error("categories is required");
+            }
+            const result = [];
+            categories.forEach((category) => {
+                if (!Array.isArray(category.domains) || category.domains.length === 0) {
+                    throw new Error("domains is required");
+                }
+                result.push(createCategory(category.name, category.domains.map((d) => d.title)));
+            });
+            return result;
+        },
+        theses: function (theses) {
+            if (!Array.isArray(theses)) {
+                throw new Error("theses is required");
+            }
+            const result = [];
+            theses.forEach((thesis, idx) => {
+                if (!Array.isArray(thesis.categories) || thesis.categories.length === 0) {
+                    throw new Error("categories is required");
+                }
+                result.push(createThesis(thesis.text, thesis.note, thesis.correctStatements, thesis.incorrectStatements, thesis.categories.map((c) => c.title), idx));
+            });
+            return result;
         },
         /*
         options: {

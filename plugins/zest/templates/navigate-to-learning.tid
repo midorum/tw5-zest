@@ -1,0 +1,17 @@
+title: $:/plugins/midorum/zest/templates/navigate-to-learning
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+\parameters (
+    domain
+)
+<!-- reset learning session state (tight coupling) -->
+<$list filter="[[$:/temp/zest/session]!is[missing]]" >
+    <$action-sendmessage $message="tm-srs-delete-session" ref="$:/temp/zest/session" />
+    <$action-deletetiddler $tiddler="$:/temp/zest/session" />
+    <$action-deletetiddler $tiddler="$:/temp/srs/state/buttonsDisabled" />
+    <$action-deletetiddler $tiddler="$:/temp/zest/SrsLearningSessionDynamicTemplateState" />
+</$list>
+<!-- go to the learning session form -->
+<$action-setfield $tiddler="$:/state/zest/current-domain" text=<<domain>>/>
+<$action-navigate $to="Learning Session"/>

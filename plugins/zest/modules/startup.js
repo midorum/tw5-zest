@@ -81,6 +81,18 @@ Adds listeners for zest messages.
       messageHandler.updateThesis(params, widget, $tw);
     });
 
+    $tw.rootWidget.addEventListener("tm-zest-attach-thesis", function (event) {
+      const widget = event.widget || $tw.rootWidget;
+      const params = event.paramObject || {};
+      messageHandler.attachThesis(params, widget, $tw);
+    });
+
+    $tw.rootWidget.addEventListener("tm-zest-detach-thesis", function (event) {
+      const widget = event.widget || $tw.rootWidget;
+      const params = event.paramObject || {};
+      messageHandler.detachThesis(params, widget, $tw);
+    });
+
     $tw.rootWidget.addEventListener("tm-zest-delete-thesis", function (event) {
       const widget = event.widget || $tw.rootWidget;
       const params = event.paramObject || {};

@@ -39,10 +39,41 @@ describe("The createCategory service", () => {
         expect(results[0]).toContain(expectedMessage);
     });
 
-    it("should fail when thesis text is not provided", () => {
+    it("should create a category tiddler with correct fields when unique name is provided", () => {
+        // consoleDebugSpy.and.callThrough();
         const options = utils.setupWiki();
         const domain = options.push.domain({ name: 'Domain' });
-        const params = { name: "CategoryName", thesisText: undefined, domainId: domain.domain.title };
+        const params = {
+            name: "UniqueCategory",
+            domainId: domain.domain.title,
+            thesisText: undefined,
+            thesisNote: undefined
+        };
+        messageHandler.createCategory(params, options.widget, options.env);
+        console.debug("domains", options.wiki.filterTiddlers(`[tag[${options.tags.domain}]]`));
+        console.debug("categories", options.wiki.filterTiddlers(`[tag[${options.tags.category}]]`));
+        console.debug("theses", options.wiki.filterTiddlers(`[tag[${options.tags.thesis}]]`));
+        const categoryTag = options.tags.category;
+        const allCategories = options.wiki.getTiddlersWithTag(categoryTag);
+        expect(allCategories.length).toBe(1);
+        const categoryTiddler = options.wiki.getTiddler(allCategories[0]);
+        expect(categoryTiddler.fields.text).toBe(params.name);
+        expect(categoryTiddler.fields.tags).toContain(categoryTag);
+        expect(categoryTiddler.fields.tags).toContain(domain.domain.title);
+        const thesisTag = options.tags.thesis;
+        const allTheses = options.wiki.getTiddlersWithTag(thesisTag);
+        expect(allTheses.length).toBe(0);
+    });
+
+    it("should fail when thesis note is provided without thesis text", () => {
+        const options = utils.setupWiki();
+        const domain = options.push.domain({ name: 'Domain' });
+        const params = {
+            name: "CategoryName",
+            domainId: domain.domain.title,
+            thesisText: undefined,
+            thesisNote: "Thesis note"
+        };
         const expectedMessage = "thesis text cannot be empty";
         expect(messageHandler.createCategory(params, options.widget, options.env)).nothing();
         expect(Logger.alert).toHaveBeenCalledTimes(1);
@@ -50,7 +81,25 @@ describe("The createCategory service", () => {
         expect(results[0]).toContain(expectedMessage);
     });
 
-    it("should fail if only correctStatements is provided", () => {
+    it("should fail if thesis statements are provided without thesis text", () => {
+        // consoleDebugSpy.and.callThrough();
+        const options = utils.setupWiki();
+        const domain = options.push.domain({ name: 'Domain' });
+        const params = {
+            name: "CategoryName",
+            domainId: domain.domain.title,
+            thesisText: undefined,
+            thesisCorrectStatements: "[[A is true]]",
+            thesisIncorrectStatements: "[[B is false]]"
+        };
+        const expectedMessage = "thesis text cannot be empty";
+        expect(messageHandler.createCategory(params, options.widget, options.env)).nothing();
+        expect(Logger.alert).toHaveBeenCalledTimes(1);
+        const results = Logger.alert.calls.first().args;
+        expect(results[0]).toContain(expectedMessage);
+    });
+
+    it("should fail if only thesis correctStatements is provided", () => {
         // consoleDebugSpy.and.callThrough();
         const options = utils.setupWiki();
         const domain = options.push.domain({ name: 'Domain' });
@@ -67,7 +116,7 @@ describe("The createCategory service", () => {
         expect(results[0]).toContain(expectedMessage);
     });
 
-    it("should fail if only incorrectStatements is provided", () => {
+    it("should fail if only thesis incorrectStatements is provided", () => {
         // consoleDebugSpy.and.callThrough();
         const options = utils.setupWiki();
         const domain = options.push.domain({ name: 'Domain' });
