@@ -12,7 +12,7 @@ type: text/vnd.tiddlywiki
         groupStrategy=groupOnly
         groupFilter=`[<currentTiddler>tags[]tag[$:/zest/tags/category]tags[$:/zest/tags/domain]match[$(domainTiddler)$]]`
         limit=100
-        session="$:/state/zest/session"
+        session="$:/temp/zest/session"
         resetAfter=-1
         order=newFirst
         directions="forward"

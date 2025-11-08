@@ -3,7 +3,7 @@ type: text/vnd.tiddlywiki
 
 \whitespace trim
 <$let domainTiddler={{$:/state/zest/current-domain}}>
-  <$let editState="$:/state/zest/domain-edit">
+  <$let editState="$:/temp/zest/domain-edit-state">
       <$reveal type="match" stateTitle=<<editState>> stateField="text" text="1" >
           <div class="zest-wide-input">
             <label>
@@ -67,7 +67,7 @@ type: text/vnd.tiddlywiki
   </div>
 
   <div style="margin-top:1em;">
-    <$let addCatFormState="$:/state/zest/add-category-form-state" 
+    <$let addCatFormState="$:/temp/zest/add-category-form-state" 
       correctStatementTag="$:/temp/zest/tag/correctStatement" incorrectStatementTag="$:/temp/zest/tag/incorrectStatement" 
       tmpTiddlerBaseTitle="$:/temp/zest/holder"
     >

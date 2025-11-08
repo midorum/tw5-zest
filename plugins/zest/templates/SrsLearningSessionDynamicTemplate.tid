@@ -311,7 +311,7 @@ type: text/vnd.tiddlywiki
     <$list filter="[<session>is[missing]] ~[<session>getindex[current-src]else[missed]compare:string:eq[missed]]" >
         <$transclude $variable="srs-no-session-actions" $mode=block />
     </$list>
-    <$let state="$:/state/zest/SrsLearningSessionDynamicTemplate"
+    <$let state="$:/temp/zest/SrsLearningSessionDynamicTemplateState"
         selectedStatementsFieldName="selectedStatements"
         checkedStatementsFieldName="checkedStatements"
         hitFieldName="hitStatus"

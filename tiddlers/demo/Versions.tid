@@ -4,6 +4,7 @@ type: text/vnd.tiddlywiki
 !! 0.1.2
 
 * sharing theses between several categories
+* all state tiddlers are moved under `$:/temp` to auto clean after reload
 
 !! 0.1.1
 

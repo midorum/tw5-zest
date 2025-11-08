@@ -6,9 +6,9 @@ type: text/vnd.tiddlywiki
     ref
 )
 <!-- reset category form state (tight coupling) -->
-<$action-deletetiddler $tiddler="$:/state/zest/thesis-edit" />
+<$action-deletetiddler $tiddler="$:/temp/zest/thesis-edit-state" />
 <$action-deletetiddler $tiddler="$:/temp/zest/thesis-edit" />
-<$action-deletetiddler $tiddler="$:/state/zest/add-thesis-form-state" />
+<$action-deletetiddler $tiddler="$:/temp/zest/add-thesis-form-state" />
 <!-- go to the category form -->
 <$action-setfield $tiddler="$:/state/zest/current-category" text=<<ref>>/>
 <$action-navigate $to="Category"/>

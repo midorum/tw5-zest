@@ -3,7 +3,7 @@ type: text/vnd.tiddlywiki
 
 \whitespace trim
 <$let categoryTiddler={{$:/state/zest/current-category}} domainTiddler={{$:/state/zest/current-domain}} >
-  <$let editState="$:/state/zest/category-edit" editTmp="$:/temp/zest/category-edit">
+  <$let editState="$:/temp/zest/category-edit-state" editTmp="$:/temp/zest/category-edit-name">
 
     <$reveal type="match" stateTitle=<<editState>> stateField="text" text="1" >
         <div class="zest-wide-input">
@@ -87,7 +87,7 @@ type: text/vnd.tiddlywiki
   <$list filter="[tag[$:/zest/tags/thesis]tag<categoryTiddler>]" variable="thesis" emptyMessage="There are no theses yet.">
     <div style="margin-bottom:1em;">
       <hr/>
-      <$let thesisEditState="$:/state/zest/thesis-edit" thesisNoteState="$:/state/zest/thesis-note" thesisEditTmp="$:/temp/zest/thesis-edit"
+      <$let thesisEditState="$:/temp/zest/thesis-edit-state" thesisNoteState="$:/temp/zest/thesis-note-state" thesisEditTmp="$:/temp/zest/thesis-edit"
         correctStatementTag="$:/temp/zest/tag/correctStatement" incorrectStatementTag="$:/temp/zest/tag/incorrectStatement" 
         tmpTiddlerBaseTitle="$:/temp/zest/holder" showStatementsFormFieldName="showStatementsForm" >
 
@@ -242,7 +242,7 @@ type: text/vnd.tiddlywiki
   </$list>
 
   <div style="margin-top:1em;">
-    <$let addThesisFormState="$:/state/zest/add-thesis-form-state"
+    <$let addThesisFormState="$:/temp/zest/add-thesis-form-state"
       correctStatementTag="$:/temp/zest/tag/correctStatement" incorrectStatementTag="$:/temp/zest/tag/incorrectStatement" 
       tmpTiddlerBaseTitle="$:/temp/zest/holder"
     >
