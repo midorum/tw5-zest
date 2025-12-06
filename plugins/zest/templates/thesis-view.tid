@@ -1,0 +1,92 @@
+title: $:/plugins/midorum/zest/templates/thesis-view
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+\parameters (
+    ref,
+    state,
+    correctStatementsTag,
+    incorrectStatementsTag,
+    hasStatementsField:'hasStatements'
+)
+<$let note-model="$:/temp/zest/thesis/notes" statementHolderBaseTitle="$:/temp/zest/statement/holder" >
+    <!-- text -->
+    <p>
+        <$transclude $tiddler=<<ref>> $field="text" $mode="block"/>
+    </p>
+
+    <!-- statements -->
+    <p>
+        <ul>
+            <$list filter="[<ref>get[correct-statements]enlist-input[]] =[<ref>get[incorrect-statements]enlist-input[]]" >
+                <li><$text text=<<currentTiddler>> /></li>
+            </$list>
+        </ul>
+    </p>
+
+    <!-- note -->
+    <$reveal type="match" stateTitle=<<note-model>> stateIndex=<<ref>> text="1" >
+        <p style="color:grey;">
+            <$transclude $tiddler=<<ref>> $field="note" $mode="block"/>
+        </p>
+        <p>
+            <$transclude $tiddler=<<zest-l tag-pane>>
+                qualifier=<<ref>>
+                tagFilter="[<ref>tags[]tag[$:/zest/tags/category]]"
+                tagDisplayFieldName="name"
+                removeTagButton="false"
+                addTagButton="false"
+                isClickable="true"
+                mode="block"
+            >
+                <$fill $name="click-tag-action">
+                    <$transclude $tiddler=<<zest-l navigate-to-category>> ref=<<tag-ref>> />
+                </$fill>
+            </$transclude>
+        </p>
+    </$reveal>
+
+    <!-- buttons -->
+    <div style="margin-top:0.5em;">
+        <$button class="tc-btn-invisible tc-tiddlylink">
+            <$reveal type="match" stateTitle=<<note-model>> stateIndex=<<ref>> text="1" >
+                [Hide note]
+                <$action-setfield $tiddler=<<note-model>> $index=<<ref>> $value="0"/>
+            </$reveal>
+            <$reveal type="nomatch" stateTitle=<<note-model>> stateIndex=<<ref>> text="1" >
+                [Show note]
+                <$action-setfield $tiddler=<<note-model>> $index=<<ref>> $value="1"/>
+            </$reveal>
+        </$button>
+        <$button class="tc-btn-invisible tc-tiddlylink" style="margin-left:1em;">
+            [Edit]
+            <$action-deletetiddler $tiddler=<<state>> />
+            <$action-deletetiddler $filter="[tag<correctStatementsTag>] [tag<incorrectStatementsTag>]" />
+            <$tiddler tiddler=<<ref>> >
+                <$action-setfield $tiddler=<<state>> $field="thesis-text" $value={{!!text}}/>
+                <$action-setfield $tiddler=<<state>> $field="thesis-note" $value={{!!note}}/>
+                <$list filter="[<ref>get[correct-statements]enlist-input[]]" >
+                    <$action-createtiddler $basetitle=<<statementHolderBaseTitle>> tags=<<correctStatementsTag>> text=<<currentTiddler>> />
+                    <$action-setfield $tiddler=<<state>> $field=<<hasStatementsField>> $value="1"/>
+                </$list>
+                <$list filter="[<ref>get[incorrect-statements]enlist-input[]]" >
+                    <$action-createtiddler $basetitle=<<statementHolderBaseTitle>> tags=<<incorrectStatementsTag>> text=<<currentTiddler>> />
+                </$list>
+                <$action-setfield $tiddler=<<state>> $field="text" $value=<<ref>> />
+            </$tiddler>
+        </$button>
+        <span style="margin-left:1em;" >
+            <$transclude $tiddler=<<zest-l delete-confirm-block>> 
+                qualifier=<<ref>>
+                outsideDeleteButtonText="[Delete]"
+                insideDeleteButtonText="[Delete Thesis]"
+                insideCancelButtonText="[Cancel]"
+                warningText="WARNING: This will delete the thesis. THIS CANNOT BE UNDONE!"
+            >
+                <$fill $name="deleteActions" >
+                    <$action-sendmessage $message='tm-zest-delete-thesis' id=<<ref>>/>
+                </$fill>
+            </$transclude>
+        </span>
+    </div>
+</$let>

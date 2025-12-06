@@ -1,0 +1,6 @@
+title: $:/plugins/midorum/zest/migration
+type: text/vnd.tiddlywiki
+
+> WARNING: It is highly recommended to make a backup of your wiki before any migration to prevent data loss or corruption.
+
+<$list filter="[enlist{$:/plugins/midorum/zest/migrations/list}]" ><$transclude $mode=block /></$list>

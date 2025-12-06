@@ -165,6 +165,7 @@ Handling zest messages.
    * @param {Object} params - Parameters object.
    * @param {string} params.name - Category name. (required)
    * @param {string} params.domainId - Domain tiddler id. (required)
+   * @param {string} [params.description] - Category description. (optional)
    * @param {string} [params.thesisText] - Thesis text. (optional)
    * @param {string} [params.thesisNote] - Thesis note. (optional)
    * @param {Array} [params.thesisCorrectStatements] - Optional array of correct statements for thesis.
@@ -181,6 +182,7 @@ Handling zest messages.
     };
     const alertMsg = "%1 cannot be empty";
     const name = utils.trimToUndefined(params.name);
+    const description = utils.trimToUndefined(params.description);
     const domainId = utils.trimToUndefined(params.domainId);
     const thesisText = utils.trimToUndefined(params.thesisText);
     const thesisNote = utils.trimToUndefined(params.thesisNote);
@@ -215,7 +217,8 @@ Handling zest messages.
     const categoryTitle = context.wikiUtils.generateNewInternalTitle(categoryPrefix);
     const categoryFields = {
       title: categoryTitle,
-      text: name,
+      name: name,
+      text: description,
       tags: [categoryTag, domainId]
     };
     context.wikiUtils.addTiddler(categoryFields);
@@ -244,6 +247,7 @@ Handling zest messages.
    * @param {Object} params - Parameters object.
    * @param {string} params.id - Category tiddler id. (required)
    * @param {string} params.name - New category name. (required)
+   * @param {string} [ params.description ] - New category description. (optional)
    * @throws Alerts if id, name are empty or category not found.
    */
   exports.updateCategory = function (params, widget, env) {
@@ -268,8 +272,10 @@ Handling zest messages.
       context.logger.alert("Category name cannot be empty");
       return;
     }
+    let newDescription = utils.trimToUndefined(params.description);
     const updateFields = {
-      text: newName
+      name: newName,
+      text: newDescription
     };
     tiddler.doNotInvokeSequentiallyOnSameTiddler.updateTiddler(updateFields);
   };
@@ -641,5 +647,70 @@ Handling zest messages.
     }
     thesisTiddler.doNotInvokeSequentiallyOnSameTiddler.deleteTiddler();
   };
+
+  exports.migrate1 = function (params, widget, env) {
+    const context = {
+      wikiUtils: utils.getWikiUtils(widget.wiki),
+      env: env,
+      logger: new $tw.utils.Logger("Zest:migrate1"),
+      tags: $tw.wiki.getTiddlerData("$:/plugins/midorum/zest/data/tags", []),
+      prefixes: $tw.wiki.getTiddlerData("$:/plugins/midorum/zest/data/prefixes", []),
+    };
+    const categoryTag = context.tags.category;
+    const categories = context.wikiUtils.allTitlesWithTag(categoryTag) || [];
+    const migrationTime = Date.now();
+    const migrated = [];
+    const skipped = [];
+    for (let title of categories) {
+      const tiddler = context.wikiUtils.withTiddler(title);
+      if (!tiddler.exists()) {
+        skipped.push({ title: title, reason: "not found" });
+        continue;
+      }
+      const alreadyMigrated = tiddler.getTiddlerField("zest-migrated-1");
+      if (alreadyMigrated) {
+        skipped.push({ title: title, reason: "already migrated" });
+        continue;
+      }
+      const currentName = tiddler.getTiddlerField("name");
+      if (currentName) {
+        // name already present, but still mark as skipped (no-op)
+        skipped.push({ title: title, reason: "name present" });
+        continue;
+      }
+      const text = tiddler.getTiddlerField("text");
+      const trimmed = utils.trimToUndefined(text);
+      if (!trimmed) {
+        skipped.push({ title: title, reason: "empty text" });
+        continue;
+      }
+      // Perform migration: set name, clear text, mark with migration timestamp
+      tiddler.doNotInvokeSequentiallyOnSameTiddler.updateTiddler({ name: trimmed, text: undefined, "zest-migrated-1": String(migrationTime) });
+      migrated.push(title);
+    }
+    // Write migration summary to a log tiddler
+    const logTitle = context.prefixes.log + "migrate1_" + migrationTime;
+    const logLines = [];
+    logLines.push(`Migration run at: ${new Date(migrationTime).toISOString()}`);
+    logLines.push(`\nMigration type: migrate1`);
+    logLines.push(`\nMigration cause: changed category data schema`);
+    logLines.push(`\nMigrated count: ${migrated.length}`);
+    logLines.push(`\nSkipped count: ${skipped.length}`);
+    if (migrated.length) {
+      logLines.push("\n!! Migrated titles:\n");
+      for (let t of migrated) {
+        logLines.push(`* [[${t}]]`);
+      }
+    }
+    if (skipped.length) {
+      logLines.push("\n!! Skipped titles (reason):\n");
+      for (let s of skipped) {
+        logLines.push(`* [[${s.title}]] (${s.reason})`);
+      }
+    }
+    const summaryText = logLines.join("\n");
+    // create or update the log tiddler
+    context.wikiUtils.addTiddler({ title: logTitle, tags: [context.tags.log, context.tags.migration1], text: summaryText });
+  }
 
 })();

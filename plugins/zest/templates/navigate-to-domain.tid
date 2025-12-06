@@ -5,5 +5,5 @@ type: text/vnd.tiddlywiki
 \parameters (
     ref
 )
-<$action-setfield $tiddler="$:/state/zest/current-domain" text=<<ref>>/>
+<$action-setfield $tiddler="$:/state/zest/view" domain=<<ref>>/>
 <$action-navigate $to="Domain"/>

@@ -45,6 +45,7 @@ describe("The createCategory service", () => {
         const domain = options.push.domain({ name: 'Domain' });
         const params = {
             name: "UniqueCategory",
+            description: "UniqueCategory Description",
             domainId: domain.domain.title,
             thesisText: undefined,
             thesisNote: undefined
@@ -57,7 +58,8 @@ describe("The createCategory service", () => {
         const allCategories = options.wiki.getTiddlersWithTag(categoryTag);
         expect(allCategories.length).toBe(1);
         const categoryTiddler = options.wiki.getTiddler(allCategories[0]);
-        expect(categoryTiddler.fields.text).toBe(params.name);
+        expect(categoryTiddler.fields.name).toBe(params.name);
+        expect(categoryTiddler.fields.text).toBe(params.description);
         expect(categoryTiddler.fields.tags).toContain(categoryTag);
         expect(categoryTiddler.fields.tags).toContain(domain.domain.title);
         const thesisTag = options.tags.thesis;
@@ -175,6 +177,7 @@ describe("The createCategory service", () => {
         const domain = options.push.domain({ name: 'Domain' });
         const params = {
             name: "UniqueCategory",
+            description: "UniqueCategory Description",
             domainId: domain.domain.title,
             thesisText: "Thesis text",
             thesisNote: "Thesis note"
@@ -184,7 +187,8 @@ describe("The createCategory service", () => {
         const allCategories = options.wiki.getTiddlersWithTag(categoryTag);
         expect(allCategories.length).toBe(1);
         const categoryTiddler = options.wiki.getTiddler(allCategories[0]);
-        expect(categoryTiddler.fields.text).toBe(params.name);
+        expect(categoryTiddler.fields.name).toBe(params.name);
+        expect(categoryTiddler.fields.text).toBe(params.description);
         expect(categoryTiddler.fields.tags).toContain(categoryTag);
         expect(categoryTiddler.fields.tags).toContain(domain.domain.title);
         const thesisTag = options.tags.thesis;

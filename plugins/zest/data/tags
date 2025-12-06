@@ -1,3 +1,5 @@
 domain:$:/zest/tags/domain
 category:$:/zest/tags/category
 thesis:$:/zest/tags/thesis
+log:$:/zest/tags/log
+migration1:$:/zest/tags/migration1

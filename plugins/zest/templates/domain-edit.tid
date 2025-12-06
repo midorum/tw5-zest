@@ -1,0 +1,37 @@
+title: $:/plugins/midorum/zest/templates/domain-edit
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+\parameters (
+    ref,
+    state
+)
+<div class="zest-wide-input">
+    <label>
+        Domain Name:<br/>
+        <$edit-text tiddler=<<state>> field="name" tag="input" style="font-size:1.2em;width:100%;"/>
+    </label>
+</div>
+<div class="zest-wide-input" style="margin-top:0.5em;">
+    <label>
+        Domain Description:<br/>
+        <$edit-text tiddler=<<state>> field="description" tag="textarea" style="font-size:1.2em;width:100%;"/>
+    </label>
+</div>
+<div style="margin-top:0.5em;">
+    <$button class="tc-btn-invisible tc-tiddlylink" >
+        [Save]
+        <$tiddler tiddler=<<state>> >
+            <$action-sendmessage $message="tm-zest-update-domain"
+                id=<<ref>>
+                name={{!!name}}
+                description={{!!description}}
+            />
+        </$tiddler>
+        <$action-deletetiddler $tiddler=<<state>> />
+    </$button>
+    <$button class="tc-btn-invisible tc-tiddlylink" style="margin-left:1em;">
+        [Cancel]
+        <$action-deletetiddler $tiddler=<<state>> />
+    </$button>
+</div>

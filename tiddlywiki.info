@@ -1,9 +1,10 @@
 {
-	"description": "server configuration with tests",
+    "description": "server configuration with tests",
     "plugins": [
         "tiddlywiki/tiddlyweb",
         "tiddlywiki/filesystem",
-		"tiddlywiki/jasmine"
+        "tiddlywiki/internals",
+        "tiddlywiki/jasmine"
     ],
     "themes": [
         "tiddlywiki/snowwhite",
@@ -14,8 +15,12 @@
             "--test"
         ],
         "test-output": [
-            "--output", "./output/test/",
-            "--rendertiddler", "$:/core/save/all", "test.html", "text/plain",
+            "--output",
+            "./output/test/",
+            "--rendertiddler",
+            "$:/core/save/all",
+            "test.html",
+            "text/plain",
             "--test"
         ]
     }

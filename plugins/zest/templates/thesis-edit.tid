@@ -1,0 +1,78 @@
+title: $:/plugins/midorum/zest/templates/thesis-edit
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+\parameters (
+    ref,
+    state,
+    correctStatementsTag,
+    incorrectStatementsTag,
+    hasStatementsField:'hasStatements'
+)
+<div class="zest-wide-input">
+    <label>
+        Thesis text:<br/>
+        <$edit-text tiddler=<<state>> field="thesis-text" tag="textarea" style="width:100%;min-height:3em;"/>
+    </label>
+</div>
+<$transclude
+    $tiddler=<<zest-l thesis-statements-editor>>
+    state=<<state>>
+    correctStatementsTag=<<correctStatementsTag>>
+    incorrectStatementsTag=<<incorrectStatementsTag>>
+    hasStatementsField=<<hasStatementsField>>
+/>
+<div class="zest-wide-input" style="margin-top:0.5em;">
+    <label>
+        Note:<br/>
+        <$edit-text tiddler=<<state>> field="thesis-note" tag="textarea" style="width:100%;min-height:2em;"/>
+    </label>
+</div>
+<p>
+    <$transclude $tiddler=<<zest-l tag-pane>>
+        qualifier=<<thesis>>
+        tagFilter="[<thesis>tags[]tag[$:/zest/tags/category]]"
+        tagDisplayFieldName="name"
+        removeTagButton="true"
+        addTagButton="true"
+        addTagButtonName="[Link Category]"
+        defaultListFilter="[tag[$:/zest/tags/category]tag<domainTiddler>] =[tag[$:/zest/tags/category]!tag<domainTiddler>]"
+        searchFilter="[tag[$:/zest/tags/category]regexp:text<pattern>]"
+        itemFieldName="name"
+        mode="block"
+    >
+        <$fill $name="remove-tag-action">
+            <$action-confirm $message="Do you wish to detach this thesis from the category?" >
+                <$action-sendmessage $message="tm-zest-detach-thesis" thesisId=<<thesis>> categoryId=<<tag-ref>> />
+            </$action-confirm>
+        </$fill>
+        <$fill $name="item-select-action">
+            <$action-sendmessage $message="tm-zest-attach-thesis" thesisId=<<thesis>> categoryId=<<selected>> />
+        </$fill>
+    </$transclude>
+</p>
+<div style="margin-top:0.5em;">
+    <$button class="tc-btn-invisible tc-tiddlylink">
+        [Save]
+        <$set name="thesisCorrectStatements" filter="[tag<correctStatementsTag>get[text]]">
+            <$set name="thesisIncorrectStatements" filter="[tag<incorrectStatementsTag>get[text]]">
+                <$tiddler tiddler=<<state>> >
+                    <$action-sendmessage $message="tm-zest-update-thesis"
+                        id=<<thesis>>
+                        text={{!!thesis-text}}
+                        note={{!!thesis-note}}
+                        correctStatements=<<thesisCorrectStatements>>
+                        incorrectStatements=<<thesisIncorrectStatements>>
+                    />
+                </$tiddler>
+            </$set>
+        </$set>
+        <$action-deletetiddler $filter="[tag<correctStatementsTag>] [tag<incorrectStatementsTag>]" />
+        <$action-deletetiddler $tiddler=<<state>> />
+    </$button>
+    <$button class="tc-btn-invisible tc-tiddlylink" style="margin-left:1em;">
+        [Cancel]
+        <$action-deletetiddler $filter="[tag<correctStatementsTag>] [tag<incorrectStatementsTag>]" />
+        <$action-deletetiddler $tiddler=<<state>> />
+    </$button>
+</div>

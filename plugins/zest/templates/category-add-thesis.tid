@@ -1,0 +1,56 @@
+title: $:/plugins/midorum/zest/templates/category-add-thesis
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+\parameters (
+    ref
+)
+<div style="margin-top:1em;">
+    <$let state=`$:/temp/zest/thesis/editor/$(ref)$` 
+        correctStatementTag=`$:/temp/zest/statement/correct/$(ref)$` 
+        incorrectStatementTag=`$:/temp/zest/statement/incorrect/$(ref)$` 
+    >
+        <$reveal type="match" stateTitle=<<state>> stateField="text" text="1" >
+            <div class="zest-add-thesis-form" style="border:1px solid #ccc;padding:1em;">
+                <$transclude $tiddler=<<zest-l thesis-create>> 
+                    state=<<state>>
+                    correctStatementTag=<<correctStatementTag>>
+                    incorrectStatementTag=<<incorrectStatementTag>>
+                />
+                <div style="margin-top:1em;">
+                    <$set name="thesisCorrectStatements" filter="[tag<correctStatementTag>get[text]]">
+                        <$set name="thesisIncorrectStatements" filter="[tag<incorrectStatementTag>get[text]]">
+                            <$tiddler tiddler=<<state>>>
+                                <$button class="tc-btn-invisible tc-tiddlylink">
+                                    [Create Thesis]
+                                    <$action-sendmessage $message="tm-zest-create-thesis"
+                                        categoryId=<<ref>>
+                                        text={{!!thesisText}}
+                                        note={{!!thesisNote}}
+                                        correctStatements=<<thesisCorrectStatements>>
+                                        incorrectStatements=<<thesisIncorrectStatements>>
+                                    />
+                                    <$action-deletetiddler $tiddler=<<state>>/>
+                                </$button>
+                            </$tiddler>
+                        </$set>
+                    </$set>
+                    <$button class="tc-btn-invisible tc-tiddlylink" style="margin-left:1em;">
+                        [Cancel]
+                        <$action-deletetiddler $tiddler=<<state>>/>
+                        <$action-deletetiddler $filter="[tag<correctStatementTag>] [tag<incorrectStatementTag>]" />
+                    </$button>
+                </div>
+            </div>
+        </$reveal>
+
+        <$reveal type="nomatch" stateTitle=<<state>> stateField="text" text="1" >
+            <$button class="tc-btn-invisible tc-tiddlylink" >
+                [Add Thesis]
+                <$action-deletetiddler $tiddler=<<state>>/>
+                <$action-deletetiddler $filter="[tag<correctStatementTag>] [tag<incorrectStatementTag>]" />
+                <$action-setfield $tiddler=<<state>> text="1"/>
+            </$button>
+        </$reveal>
+    </$let>
+</div>

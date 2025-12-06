@@ -1,0 +1,64 @@
+title: $:/plugins/midorum/zest/templates/migration
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+\parameters (
+    migration,
+    fromVer,
+    toVer,
+    cause,
+    oldVerFilter,
+    newVerFilter,
+    migrateMsg
+)
+<p><h2>v<<fromVer>>&nbsp;-&gt;&nbsp;v<<toVer>></h2></p>
+
+<p><bold>Cause</bold>:&nbsp;<<cause>>.</p>
+
+<p>
+    Old version items count: 
+    <$set name="old-count" filter="[subfilter<oldVerFilter>count[]]" >
+        &nbsp;
+        <$text text=<<old-count>> />
+        <$list filter="[<old-count>compare:number:gt[0]]" >
+            <p>
+                <$button class="tc-btn-invisible tc-tiddlylink" >
+                    [Do migration]
+                    <$action-sendmessage $message=`tm-zest-$(migrateMsg)$` />
+                </$button>
+            </p>
+        </$list>
+    </$set>
+</p>
+
+<$reveal
+ type="match"
+ state="$:/info/url/hostname"
+ text="localhost"
+>
+
+    !!! Migration logs
+
+    <$let t=`$:/zest/tags/$(migration)$` >
+
+        {{{ [tag[$:/zest/tags/log]tag<t>] }}}
+
+    </$let>
+
+    <$button class="tc-btn-invisible tc-tiddlylink">
+        [Show Old Version Items]
+        <$action-setfield $tiddler="$:/state/tab--1498284803" text="$:/core/ui/AdvancedSearch/Filter"/>
+        <$action-setfield $tiddler="$:/temp/advancedsearch" text=<<oldVerFilter>> />
+        <$action-setfield $tiddler="$:/temp/advancedsearch/input" text=<<oldVerFilter>> />
+        <$action-navigate $to="$:/AdvancedSearch"/>
+    </$button>
+
+    <$button class="tc-btn-invisible tc-tiddlylink">
+        [Show New Version Items]
+        <$action-setfield $tiddler="$:/state/tab--1498284803" text="$:/core/ui/AdvancedSearch/Filter"/>
+        <$action-setfield $tiddler="$:/temp/advancedsearch" text=<<newVerFilter>> />
+        <$action-setfield $tiddler="$:/temp/advancedsearch/input" text=<<newVerFilter>> />
+        <$action-navigate $to="$:/AdvancedSearch"/>
+    </$button>
+
+</$reveal>

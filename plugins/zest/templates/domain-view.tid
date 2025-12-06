@@ -1,0 +1,22 @@
+title: $:/plugins/midorum/zest/templates/domain-view
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+\parameters (
+    ref,
+    state
+)
+<h2>
+    <$transclude $tiddler=<<ref>> $field="name" $mode="block"/>
+</h2>
+<div style="margin-bottom:1em;">
+    <$transclude $tiddler=<<ref>> $field="text" $mode="block"/>
+</div>
+<$button class="tc-btn-invisible tc-tiddlylink">
+    [Edit]
+    <$tiddler tiddler=<<ref>> >
+        <$action-setfield $tiddler=<<state>> $field="name" $value={{!!name}} />
+        <$action-setfield $tiddler=<<state>> $field="description" $value={{!!text}} />
+    </$tiddler>
+    <$action-setfield $tiddler=<<state>> text="1"/>
+</$button>

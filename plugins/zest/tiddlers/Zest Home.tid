@@ -8,14 +8,14 @@ type: text/vnd.tiddlywiki
     <div>
       <$button class="tc-btn-invisible tc-tiddlylink" >
         <$view tiddler=<<domain>> field="name"/>
-        <$transclude $tiddler="$:/plugins/midorum/zest/templates/navigate-to-domain" ref=<<domain>> />
+        <$transclude $tiddler=<<zest-l navigate-to-domain>> ref=<<domain>> />
       </$button>
       <$button
         class="tc-btn-invisible tc-tiddlylink" style="margin-left:0.5em"
         tooltip="Learn categories in this domain"
       >
         {{$:/core/images/help}}
-        <$transclude $tiddler="$:/plugins/midorum/zest/templates/navigate-to-learning" domain=<<domain>> />
+        <$transclude $tiddler=<<zest-l navigate-to-learning>> domain=<<domain>> />
       </$button>
     </div>
   </$list>

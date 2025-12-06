@@ -1,0 +1,30 @@
+title: $:/plugins/midorum/zest/templates/thesis-create
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+\parameters (
+    state,
+    hint:"Enter the thesis text for this category.",
+    correctStatementTag,
+    incorrectStatementTag
+)
+<div class="zest-wide-input" style="margin-top:0.7em;">
+    <label>
+        Thesis text:<br/>
+        <span style="font-size:smaller;color:#888;"><<hint>></span><br/>
+        <$edit-text tiddler=<<state>> field="thesisText" default="" tag="textarea" style="width:100%;min-height:3em;"/>
+    </label>
+</div>
+<$transclude
+    $tiddler=<<zest-l thesis-statements-editor>>
+    state=<<state>>
+    correctStatementTag=<<correctStatementTag>>
+    incorrectStatementTag=<<incorrectStatementTag>>
+/>
+<div class="zest-wide-input" style="margin-top:0.7em;">
+    <label>
+        Thesis note:<br/>
+        <span style="font-size:smaller;color:#888;">Optional: add a note to the thesis.</span><br/>
+        <$edit-text tiddler=<<state>> field="thesisNote" default="" tag="textarea" style="width:100%;min-height:2em;"/>
+    </label>
+</div>

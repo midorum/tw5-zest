@@ -3,11 +3,11 @@
 	"title": "$:/plugins/midorum/zest",
 	"description": "TiddlyWiki plugin for organizing personal quizzes",
 	"author": "midorum",
-	"version": "0.1.2",
+	"version": "0.2.0",
 	"core-version": ">=5.3.3",
 	"source": "https://github.com/midorum/tw5-zest",
 	"demo": "https://tw5-zest.tiddlyhost.com/",
-	"list": "readme configuration license",
+	"list": "readme configuration license migration",
 	"dependents": "SRS >=0.1.10 (https://github.com/midorum/tw5-srs)",
 	"plugin-type": "plugin"
 }

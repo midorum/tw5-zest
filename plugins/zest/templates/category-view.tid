@@ -1,0 +1,39 @@
+title: $:/plugins/midorum/zest/templates/category-view
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+\parameters (
+    ref,
+    state
+)
+<p>
+    <$transclude $tiddler=<<zest-l tag-pane>>
+        qualifier=<<ref>>
+        tagFilter="[<ref>tags[]tag[$:/zest/tags/domain]]"
+        tagDisplayFieldName="name"
+        removeTagButton="false"
+        addTagButton="false"
+        isClickable="true"
+        mode="block"
+    >
+        <$fill $name="click-tag-action">
+            <$transclude $tiddler=<<zest-l navigate-to-domain>> ref=<<tag-ref>> />
+        </$fill>
+    </$transclude>
+</p>
+<h2>
+    <$transclude $tiddler=<<ref>> $field="name" $mode="block"/>
+</h2>
+<div style="margin-bottom:1em;">
+    <$transclude $tiddler=<<ref>> $field="text" $mode="block"/>
+</div>
+<p>
+    <$button class="tc-btn-invisible tc-tiddlylink">
+        [Edit]
+        <$tiddler tiddler=<<ref>> >
+            <$action-setfield $tiddler=<<state>> $field="name" $value={{!!name}} />
+            <$action-setfield $tiddler=<<state>> $field="description" $value={{!!text}} />
+        </$tiddler>
+        <$action-setfield $tiddler=<<state>> text="1"/>
+    </$button>
+</p>
