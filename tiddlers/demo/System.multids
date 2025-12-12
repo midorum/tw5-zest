@@ -2,7 +2,7 @@ title: $:/
 
 SiteTitle: tw5-zest
 SiteSubtitle: Mastering your knowledge!
-DefaultTiddlers: [[Hello form Zest!]]
+DefaultTiddlers: [[Hello from Zest!]]
 config/Navigation/openLinkFromInsideRiver: above 
 config/TiddlerInfo/Mode: sticky
 palette: $:/midorum/palettes/Midark

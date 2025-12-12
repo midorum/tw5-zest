@@ -6,7 +6,7 @@ type: text/vnd.tiddlywiki
     ref,
     state
 )
-<p>
+<p class="zest-category-domains-section">
     <$transclude $tiddler=<<zest-l tag-pane>>
         qualifier=<<ref>>
         tagFilter="[<ref>tags[]tag[$:/zest/tags/domain]]"
@@ -30,14 +30,14 @@ type: text/vnd.tiddlywiki
     </$transclude>
 </p>
 
-<div class="zest-wide-input">
+<div class="zest-wide-input zest-category-name-input">
     <label>
         Category Name:<br/>
-        <$edit-text tiddler=<<state>> field="name" tag="input" style="font-size:1.2em;width:100%;"/>
+        <$edit-text tiddler=<<state>> field="name" tag="input" type="text" style="font-size:1.2em;width:100%;"/>
     </label>
 </div>
 
-<div class="zest-wide-input" style="margin-top:0.5em;">
+<div class="zest-wide-input zest-category-description-input" style="margin-top:0.5em;">
     <label>
         Category Description:<br/>
         <$edit-text tiddler=<<state>> field="description" tag="textarea" style="font-size:1.2em;width:100%;"/>
@@ -45,7 +45,7 @@ type: text/vnd.tiddlywiki
 </div>
 
 <div style="margin-top:0.5em;">
-    <$button class="tc-btn-invisible tc-tiddlylink" >
+    <$button class="tc-btn-invisible tc-tiddlylink zest-save-category-button" >
         [Save]
         <$tiddler tiddler=<<state>> >
             <$action-sendmessage $message="tm-zest-update-category"
@@ -56,7 +56,7 @@ type: text/vnd.tiddlywiki
         </$tiddler>
         <$action-deletetiddler $tiddler=<<state>> />
     </$button>
-    <$button class="tc-btn-invisible tc-tiddlylink" style="margin-left:1em;">
+    <$button class="tc-btn-invisible tc-tiddlylink zest-cancel-edit-category-button" style="margin-left:1em;">
         [Cancel]
         <$action-deletetiddler $tiddler=<<state>> />
     </$button>

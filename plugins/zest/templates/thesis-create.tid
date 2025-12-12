@@ -5,10 +5,10 @@ type: text/vnd.tiddlywiki
 \parameters (
     state,
     hint:"Enter the thesis text for this category.",
-    correctStatementTag,
-    incorrectStatementTag
+    correctStatementsTag,
+    incorrectStatementsTag
 )
-<div class="zest-wide-input" style="margin-top:0.7em;">
+<div class="zest-wide-input zest-thesis-text-input" style="margin-top:0.7em;">
     <label>
         Thesis text:<br/>
         <span style="font-size:smaller;color:#888;"><<hint>></span><br/>
@@ -18,10 +18,10 @@ type: text/vnd.tiddlywiki
 <$transclude
     $tiddler=<<zest-l thesis-statements-editor>>
     state=<<state>>
-    correctStatementTag=<<correctStatementTag>>
-    incorrectStatementTag=<<incorrectStatementTag>>
+    correctStatementsTag=<<correctStatementsTag>>
+    incorrectStatementsTag=<<incorrectStatementsTag>>
 />
-<div class="zest-wide-input" style="margin-top:0.7em;">
+<div class="zest-wide-input zest-thesis-note-input" style="margin-top:0.7em;">
     <label>
         Thesis note:<br/>
         <span style="font-size:smaller;color:#888;">Optional: add a note to the thesis.</span><br/>

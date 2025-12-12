@@ -11,7 +11,7 @@ type: text/vnd.tiddlywiki
 )
 <$let note-model="$:/temp/zest/thesis/notes" statementHolderBaseTitle="$:/temp/zest/statement/holder" >
     <!-- text -->
-    <p>
+    <p class="zest-thesis-text">
         <$transclude $tiddler=<<ref>> $field="text" $mode="block"/>
     </p>
 
@@ -26,10 +26,10 @@ type: text/vnd.tiddlywiki
 
     <!-- note -->
     <$reveal type="match" stateTitle=<<note-model>> stateIndex=<<ref>> text="1" >
-        <p style="color:grey;">
+        <p class="zest-thesis-note-text" style="color:grey;">
             <$transclude $tiddler=<<ref>> $field="note" $mode="block"/>
         </p>
-        <p>
+        <p class="zest-thesis-note-categories">
             <$transclude $tiddler=<<zest-l tag-pane>>
                 qualifier=<<ref>>
                 tagFilter="[<ref>tags[]tag[$:/zest/tags/category]]"
@@ -58,7 +58,7 @@ type: text/vnd.tiddlywiki
                 <$action-setfield $tiddler=<<note-model>> $index=<<ref>> $value="1"/>
             </$reveal>
         </$button>
-        <$button class="tc-btn-invisible tc-tiddlylink" style="margin-left:1em;">
+        <$button class="tc-btn-invisible tc-tiddlylink zest-edit-thesis-button" style="margin-left:1em;">
             [Edit]
             <$action-deletetiddler $tiddler=<<state>> />
             <$action-deletetiddler $filter="[tag<correctStatementsTag>] [tag<incorrectStatementsTag>]" />

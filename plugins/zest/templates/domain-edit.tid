@@ -6,13 +6,13 @@ type: text/vnd.tiddlywiki
     ref,
     state
 )
-<div class="zest-wide-input">
+<div class="zest-domain-name zest-wide-input">
     <label>
         Domain Name:<br/>
         <$edit-text tiddler=<<state>> field="name" tag="input" style="font-size:1.2em;width:100%;"/>
     </label>
 </div>
-<div class="zest-wide-input" style="margin-top:0.5em;">
+<div class="zest-domain-description zest-wide-input" style="margin-top:0.5em;">
     <label>
         Domain Description:<br/>
         <$edit-text tiddler=<<state>> field="description" tag="textarea" style="font-size:1.2em;width:100%;"/>

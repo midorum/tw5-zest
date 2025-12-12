@@ -25,14 +25,14 @@ type: text/vnd.tiddlywiki
   <$let addFormState="$:/state/zest/add-domain-form-state">
     <$list filter="[<addFormState>get[text]match[1]]">
       <div class="zest-add-domain-form" style="border:1px solid #ccc;padding:1em;">
-        <div class="zest-wide-input">
+        <div class="zest-domain-name zest-wide-input">
           <label>
             Domain name:<br/>
             <span style="font-size:smaller;color:#888;">Enter a unique name for the domain.</span><br/>
             <$edit-text tiddler=<<addFormState>> field="domainName" default="" tag="input" style="width:100%;"/>
           </label>
         </div>
-        <div class="zest-wide-input" style="margin-top:0.7em;">
+        <div class="zest-domain-description zest-wide-input" style="margin-top:0.7em;">
           <label>
             Description:<br/>
             <span style="font-size:smaller;color:#888;">Optional: describe the domain.</span><br/>

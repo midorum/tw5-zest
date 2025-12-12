@@ -6,13 +6,13 @@ type: text/vnd.tiddlywiki
     ref,
     state
 )
-<h2>
+<h2 class="zest-domain-name">
     <$transclude $tiddler=<<ref>> $field="name" $mode="block"/>
 </h2>
-<div style="margin-bottom:1em;">
+<div class="zest-domain-description" style="margin-bottom:1em;">
     <$transclude $tiddler=<<ref>> $field="text" $mode="block"/>
 </div>
-<$button class="tc-btn-invisible tc-tiddlylink">
+<$button class="tc-btn-invisible tc-tiddlylink zest-edit-domain-button">
     [Edit]
     <$tiddler tiddler=<<ref>> >
         <$action-setfield $tiddler=<<state>> $field="name" $value={{!!name}} />

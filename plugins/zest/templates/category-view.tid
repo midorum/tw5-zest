@@ -6,7 +6,7 @@ type: text/vnd.tiddlywiki
     ref,
     state
 )
-<p>
+<p class="zest-category-domains-tags">
     <$transclude $tiddler=<<zest-l tag-pane>>
         qualifier=<<ref>>
         tagFilter="[<ref>tags[]tag[$:/zest/tags/domain]]"
@@ -21,14 +21,14 @@ type: text/vnd.tiddlywiki
         </$fill>
     </$transclude>
 </p>
-<h2>
+<h2 class="zest-category-name">
     <$transclude $tiddler=<<ref>> $field="name" $mode="block"/>
 </h2>
-<div style="margin-bottom:1em;">
+<div class="zest-category-description" style="margin-bottom:1em;">
     <$transclude $tiddler=<<ref>> $field="text" $mode="block"/>
 </div>
 <p>
-    <$button class="tc-btn-invisible tc-tiddlylink">
+    <$button class="tc-btn-invisible tc-tiddlylink zest-edit-category-button">
         [Edit]
         <$tiddler tiddler=<<ref>> >
             <$action-setfield $tiddler=<<state>> $field="name" $value={{!!name}} />

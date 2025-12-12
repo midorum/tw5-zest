@@ -7,3 +7,5 @@ tiddlers/*
 !tiddlers/demo
 schema/*
 .DS_Store
+test-results
+*.proto
