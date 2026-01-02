@@ -7,7 +7,7 @@ type: text/vnd.tiddlywiki
 )
 <h2>Theses</h2>
 <$list filter="[tag[$:/zest/tags/thesis]tag<ref>]" variable="thesis" emptyMessage="There are no theses yet.">
-    <div class="zest-thesis-container" data-thesis-ref=<<thesis>> style="margin-bottom:1em;">
+    <div class="zest-thesis-container zest-mb-1em" data-thesis-ref=<<thesis>>>
         <hr/>
         <$let state=`$:/temp/zest/thesis/editor/$(thesis)$` 
             correctStatementsTag=`$:/temp/zest/statement/correct/$(thesis)$` 

@@ -9,16 +9,20 @@ type: text/vnd.tiddlywiki
 <div class="zest-domain-name zest-wide-input">
     <label>
         Domain Name:<br/>
-        <$edit-text tiddler=<<state>> field="name" tag="input" style="font-size:1.2em;width:100%;"/>
+        <$edit-text tiddler=<<state>> field="name" tag="input" class="zest-large-input"/>
     </label>
 </div>
-<div class="zest-domain-description zest-wide-input" style="margin-top:0.5em;">
+<div class="zest-domain-description zest-wide-input zest-mt-0-5em">
     <label>
         Domain Description:<br/>
-        <$edit-text tiddler=<<state>> field="description" tag="textarea" style="font-size:1.2em;width:100%;"/>
+        <$transclude $tiddler=<<zest-l wiki-text-editor>>
+            tiddler=<<state>>
+            field="description"
+            minHeight="3em"
+        />
     </label>
 </div>
-<div style="margin-top:0.5em;">
+<div class="zest-mt-0-5em">
     <$button class="tc-btn-invisible tc-tiddlylink" >
         [Save]
         <$tiddler tiddler=<<state>> >
@@ -30,7 +34,7 @@ type: text/vnd.tiddlywiki
         </$tiddler>
         <$action-deletetiddler $tiddler=<<state>> />
     </$button>
-    <$button class="tc-btn-invisible tc-tiddlylink" style="margin-left:1em;">
+    <$button class="tc-btn-invisible tc-tiddlylink zest-ml-1em">
         [Cancel]
         <$action-deletetiddler $tiddler=<<state>> />
     </$button>

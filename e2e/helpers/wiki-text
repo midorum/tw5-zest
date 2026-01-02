@@ -1,0 +1,110 @@
+! This is a level 1 heading
+
+!! This is a level 2 heading
+
+!!! This is a level 3 heading
+
+* List One
+** List Two
+**> A quote
+**> Another quote
+* List Three
+
+---
+
+# option 1
+# option 2
+
+---
+
+* To do today
+*# Eat
+* To get someone else to do
+*# This
+*# That
+*## And the other
+
+---
+
+# To do today
+#* Eat
+# To get someone else to do
+#* This
+#* That
+#** And the other
+
+---
+
+* List One
+*.tc-muted List Two
+* List Three
+
+---
+
+# Step 1
+# Step 2
+# Step 3<div>
+
+Here is the first of several paragraphs. Note that the double linebreak preceding this paragraph is significant.
+
+And here is the second of several paragraphs.
+</div>
+# Step 4
+# Step 5
+# Step 6
+
+```
+code block {}
+```
+
+<<<
+block quotes
+<<<
+
+<<<
+Computers are like a bicycle for our minds
+<<< Steve Jobs
+
+> A top quote
+>> A subquote
+> Another top quote
+
+* -- n-dash example 
+* --- m-dash example --- have fun!
+
+; Term being defined
+: Definition of that term
+; Another term
+: Another definition
+
+
+Regular text ''bold text'' //italic text// __underlined text__ ^^superscripted^^ ,,subscripted,, ~~strikethrough~~ `inline code` @@highlight@@
+
+``double backticks allows `embedded` backticks``
+
+"""
+This is a line
+and this is a new line
+while this is yet another line
+and this is the final one
+apart from this one
+"""
+
+---
+
+|!Cell1 |!Cell2 |
+|Cell3 |Cell3 |
+
+|Left aligned content |
+| Right aligned content|
+| Centred content |
+|+++ a very wide column so we can see the alignment +++|
+
+|^top left |^ top center |^ top right|
+|middle left | middle center | middle right|
+|,bottom left |, bottom center |, bottom right|
+
+|Cell1 |Cell2 |Cell3 |Cell4 |
+|Cell5 |Cell6 |Cell7 |<|
+|Cell5 |~|Cell7 |Cell8 |
+|>|Cell9 |Cell10 |Cell11 |

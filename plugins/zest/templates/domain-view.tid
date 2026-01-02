@@ -9,7 +9,7 @@ type: text/vnd.tiddlywiki
 <h2 class="zest-domain-name">
     <$transclude $tiddler=<<ref>> $field="name" $mode="block"/>
 </h2>
-<div class="zest-domain-description" style="margin-bottom:1em;">
+<div class="zest-domain-description zest-mb-1em">
     <$transclude $tiddler=<<ref>> $field="text" $mode="block"/>
 </div>
 <$button class="tc-btn-invisible tc-tiddlylink zest-edit-domain-button">

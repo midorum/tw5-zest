@@ -5,37 +5,33 @@ type: text/vnd.tiddlywiki
 \parameters (
     ref
 )
-<div style="margin-top:1em;">
-    <$let state=`$:/temp/zest/thesis/editor/$(ref)$` 
-        correctStatementsTag=`$:/temp/zest/statement/correct/$(ref)$` 
-        incorrectStatementsTag=`$:/temp/zest/statement/incorrect/$(ref)$` 
+<div class="zest-mt-1em">
+    <$let state=`$:/temp/zest/thesis/editor/$(ref)$`
+        correctStatementsTag=`$:/temp/zest/statement/correct/$(ref)$`
+        incorrectStatementsTag=`$:/temp/zest/statement/incorrect/$(ref)$`
     >
         <$reveal type="match" stateTitle=<<state>> stateField="text" text="1" >
-            <div class="zest-add-thesis-form" style="border:1px solid #ccc;padding:1em;">
+            <div class="zest-add-thesis-form zest-form-container">
                 <$transclude $tiddler=<<zest-l thesis-create>>
                     state=<<state>>
                     correctStatementsTag=<<correctStatementsTag>>
                     incorrectStatementsTag=<<incorrectStatementsTag>>
                 />
-                <div style="margin-top:1em;">
-                    <$set name="thesisCorrectStatements" filter="[tag<correctStatementsTag>get[text]]">
-                        <$set name="thesisIncorrectStatements" filter="[tag<incorrectStatementsTag>get[text]]">
-                            <$tiddler tiddler=<<state>>>
-                                <$button class="tc-btn-invisible tc-tiddlylink zest-create-thesis-button">
-                                    [Create Thesis]
-                                    <$action-sendmessage $message="tm-zest-create-thesis"
-                                        categoryId=<<ref>>
-                                        text={{!!thesisText}}
-                                        note={{!!thesisNote}}
-                                        correctStatements=<<thesisCorrectStatements>>
-                                        incorrectStatements=<<thesisIncorrectStatements>>
-                                    />
-                                    <$action-deletetiddler $tiddler=<<state>>/>
-                                </$button>
-                            </$tiddler>
-                        </$set>
-                    </$set>
-                    <$button class="tc-btn-invisible tc-tiddlylink zest-cancel-create-thesis-button" style="margin-left:1em;">
+                <div class="zest-mt-1em">
+                    <$tiddler tiddler=<<state>>>
+                        <$button class="tc-btn-invisible tc-tiddlylink zest-create-thesis-button">
+                            [Create Thesis]
+                            <$action-sendmessage $message="tm-zest-create-thesis"
+                                categoryId=<<ref>>
+                                text={{!!thesisText}}
+                                note={{!!thesisNote}}
+                                correctStatementsTag=<<correctStatementsTag>>
+                                incorrectStatementsTag=<<incorrectStatementsTag>>
+                            />
+                            <$action-deletetiddler $tiddler=<<state>>/>
+                        </$button>
+                    </$tiddler>
+                    <$button class="tc-btn-invisible tc-tiddlylink zest-cancel-create-thesis-button zest-ml-1em">
                         [Cancel]
                         <$action-deletetiddler $tiddler=<<state>>/>
                         <$action-deletetiddler $filter="[tag<correctStatementsTag>] [tag<incorrectStatementsTag>]" />

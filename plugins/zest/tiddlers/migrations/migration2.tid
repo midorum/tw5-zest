@@ -1,0 +1,14 @@
+title: $:/plugins/midorum/zest/migrations/migration2
+type: text/vnd.tiddlywiki
+
+<$transclude
+ $tiddler=<<zest-l migration>>
+ migration="migration2"
+ fromVer="0.1.2"
+ toVer="0.2.0"
+ cause="changed statement storage from text lists to separate tiddlers"
+ oldVerFilter="[tag[$:/zest/tags/thesis]has[correct-statements]!regexp:correct-statements[\$:/zest/db/statement/]]"
+ newVerFilter="[tag[$:/zest/tags/thesis]!has[correct-statements]] [tag[$:/zest/tags/thesis]regexp:correct-statements[\$:/zest/db/statement/]]"
+ migrateMsg="migrate-2"
+ $mode=block
+/>

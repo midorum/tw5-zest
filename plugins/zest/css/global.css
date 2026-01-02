@@ -6,6 +6,149 @@
   width: 100%;
 }
 
+.zest-code-input {
+  font-family: monospace;
+}
+
 .tc-drop-down input {
   margin: 0 14px 0 14px;
+}
+
+.srs-learning-session-form pre {
+  margin-top: 0;
+}
+
+/* Utility classes for common margins */
+.zest-mt-1em {
+  margin-top: 1em;
+}
+
+.zest-mt-0-7em {
+  margin-top: 0.7em;
+}
+
+.zest-mt-0-5em {
+  margin-top: 0.5em;
+}
+
+.zest-ml-1em {
+  margin-left: 1em;
+}
+
+.zest-mb-1em {
+  margin-bottom: 1em;
+}
+
+.zest-mb-0-7em {
+  margin-bottom: 0.7em;
+}
+
+.zest-mb-0-5em {
+  margin-bottom: 0.5em;
+}
+
+.zest-mb-0-3em {
+  margin-bottom: 0.3em;
+}
+
+/* Hint text styling */
+.zest-hint {
+  font-size: smaller;
+  color: #888;
+}
+
+/* Error/warning text */
+.zest-error-text {
+  color: red !important;
+}
+
+.zest-error-text-bold {
+  color: red !important;
+  font-weight: bold;
+}
+
+.zest-warning-text {
+  color: yellow !important;
+}
+
+.zest-grey-text {
+  color: grey !important;
+}
+
+/* Form containers */
+.zest-form-container {
+  border: 1px solid #ccc;
+  padding: 1em;
+}
+
+.zest-delete-container {
+  border: 1px solid #f00;
+  padding: 1em;
+  margin-top: 1em;
+}
+
+/* Statement boxes */
+.zest-statement-box-correct {
+  border: 1px solid #4caf50;
+  border-radius: 4px;
+  padding: 0.7em 1em 1em 1em;
+  margin-bottom: 0.7em;
+}
+
+.zest-statement-box-incorrect {
+  border: 1px solid #f44336;
+  border-radius: 4px;
+  padding: 0.7em 1em 1em 1em;
+  margin-bottom: 0.7em;
+}
+
+.zest-statement-input-wrapper {
+  margin-top: 0.7em;
+  padding: 0.5em;
+  border-radius: 4px;
+}
+
+/* Preview pane */
+.zest-preview-pane {
+  flex: 1;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  min-height: 2em;
+}
+
+/* Large input fields */
+.zest-large-input {
+  font-size: 1.2em;
+  width: 100%;
+}
+
+/* Flexbox utilities */
+.zest-flex-row {
+  display: flex;
+  gap: 1em;
+}
+
+.zest-flex-end {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5em;
+}
+
+.zest-flex-1 {
+  flex: 1;
+}
+
+.zest-flex-start-row {
+  display: flex;
+  align-items: flex-start;
+}
+
+/* Font size utilities */
+.zest-font-larger {
+  font-size: larger;
+}
+
+/* Delete confirm input */
+.zest-delete-confirm-input {
+  width: 12em;
 }

@@ -8,11 +8,15 @@ type: text/vnd.tiddlywiki
     correctStatementsTag,
     incorrectStatementsTag
 )
-<div class="zest-wide-input zest-thesis-text-input" style="margin-top:0.7em;">
+<div class="zest-wide-input zest-thesis-text-input zest-mt-0-7em">
     <label>
         Thesis text:<br/>
-        <span style="font-size:smaller;color:#888;"><<hint>></span><br/>
-        <$edit-text tiddler=<<state>> field="thesisText" default="" tag="textarea" style="width:100%;min-height:3em;"/>
+        <span class="zest-hint"><<hint>></span><br/>
+        <$transclude $tiddler=<<zest-l wiki-text-editor>>
+            tiddler=<<state>>
+            field="thesisText"
+            minHeight="3em"
+        />
     </label>
 </div>
 <$transclude
@@ -21,10 +25,14 @@ type: text/vnd.tiddlywiki
     correctStatementsTag=<<correctStatementsTag>>
     incorrectStatementsTag=<<incorrectStatementsTag>>
 />
-<div class="zest-wide-input zest-thesis-note-input" style="margin-top:0.7em;">
+<div class="zest-wide-input zest-thesis-note-input zest-mt-0-7em">
     <label>
         Thesis note:<br/>
-        <span style="font-size:smaller;color:#888;">Optional: add a note to the thesis.</span><br/>
-        <$edit-text tiddler=<<state>> field="thesisNote" default="" tag="textarea" style="width:100%;min-height:2em;"/>
+        <span class="zest-hint">Optional: add a note to the thesis.</span><br/>
+        <$transclude $tiddler=<<zest-l wiki-text-editor>>
+            tiddler=<<state>>
+            field="thesisNote"
+            minHeight="2em"
+        />
     </label>
 </div>

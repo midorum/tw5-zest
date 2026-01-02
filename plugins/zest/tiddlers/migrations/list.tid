@@ -2,3 +2,4 @@ title: $:/plugins/midorum/zest/migrations/list
 type: text/vnd.tiddlywiki
 
 $:/plugins/midorum/zest/migrations/migration1
+$:/plugins/midorum/zest/migrations/migration2

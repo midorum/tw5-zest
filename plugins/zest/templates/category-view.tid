@@ -24,7 +24,7 @@ type: text/vnd.tiddlywiki
 <h2 class="zest-category-name">
     <$transclude $tiddler=<<ref>> $field="name" $mode="block"/>
 </h2>
-<div class="zest-category-description" style="margin-bottom:1em;">
+<div class="zest-category-description zest-mb-1em">
     <$transclude $tiddler=<<ref>> $field="text" $mode="block"/>
 </div>
 <p>

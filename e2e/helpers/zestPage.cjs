@@ -680,7 +680,7 @@ class Do {
         const thesisTextElement = this.page.locator(locators.thesisText.replace('${text}', thesisText));
         await expect(thesisTextElement).toBeVisible();
         // Find the thesis container with data-thesis-ref attribute
-        const thesisContainer = thesisTextElement.locator('xpath=ancestor::div[@class="zest-thesis-container"]').first();
+        const thesisContainer = thesisTextElement.locator('xpath=ancestor::div[contains(@class, "zest-thesis-container")]').first();
         await expect(thesisContainer).toBeVisible();
         const thesisRef = await thesisContainer.getAttribute('data-thesis-ref');
         return thesisRef;

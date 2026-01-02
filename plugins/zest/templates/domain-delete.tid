@@ -5,8 +5,8 @@ type: text/vnd.tiddlywiki
 \parameters (
     ref
 )
-<div style="margin-top:1em;">
-    <$button class="tc-btn-invisible tc-tiddlylink" style="color:red;">
+<div class="zest-mt-1em">
+    <$button class="tc-btn-invisible tc-tiddlylink zest-error-text">
         [Delete Domain]
         <$action-confirm $message="Do you wish to delete this domain? This cannot be undone!">
             <$action-sendmessage $message="tm-zest-delete-domain" id=<<ref>>/>

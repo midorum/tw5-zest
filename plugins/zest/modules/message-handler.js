@@ -14,26 +14,156 @@ Handling zest messages.
 
   const utils = require("$:/plugins/midorum/zest/modules/utils.js").zestUtils;
 
-  function validateThesisStatements(correctStatements, incorrectStatements) {
-    if (!correctStatements && !incorrectStatements) {
-      return {};
-    }
-    if (!correctStatements || !incorrectStatements) {
+  /**
+   * Extract and deduplicate valid statement texts from temporary tiddlers.
+   * @param {Array<string>} tempTiddlerTitles - Array of temporary statement tiddler titles.
+   * @param {Object} context - Context object with wikiUtils.
+   * @returns {Array<string>} - Array of unique non-empty statement texts.
+   */
+  function extractValidStatementTexts(tempTiddlerTitles, context) {
+    const texts = [];
+    const seenTexts = new Set();
+
+    tempTiddlerTitles.forEach(tempTitle => {
+      const tempTiddler = context.wikiUtils.withTiddler(tempTitle, true);
+      if (tempTiddler.exists()) {
+        const text = utils.trimToUndefined(tempTiddler.getTiddlerField("text"));
+        if (text && !seenTexts.has(text)) {
+          seenTexts.add(text);
+          texts.push(text);
+        }
+      }
+    });
+
+    return texts;
+  }
+
+  /**
+   * Validate temporary statement tiddlers.
+   * Checks that either both correct and incorrect statements are provided with valid content,
+   * or neither is provided.
+   * @param {Array<string>} correctStatementTiddlers - Array of correct statement tiddler titles.
+   * @param {Array<string>} incorrectStatementTiddlers - Array of incorrect statement tiddler titles.
+   * @param {Object} context - Context object with wikiUtils.
+   * @returns {Object} - { status: 'error'|'remove'|'create', error: string|null }
+   *   - 'error': validation failed, show error message
+   *   - 'remove': no valid statements, remove existing statement fields
+   *   - 'create': valid statements in both groups, create new statement tiddlers
+   */
+  function validateStatementTiddlers(correctStatementTiddlers, incorrectStatementTiddlers, context) {
+    // Check that both or none are provided at tiddler level
+    if ((correctStatementTiddlers.length > 0 && incorrectStatementTiddlers.length === 0) ||
+      (correctStatementTiddlers.length === 0 && incorrectStatementTiddlers.length > 0)) {
       return {
+        status: 'error',
         error: "Both thesis correct statements and incorrect statements must be provided together"
       };
     }
-    const csl = utils.parseStringList(correctStatements, false);
-    const isl = utils.parseStringList(incorrectStatements, false);
-    if (csl.length === 0 || isl.length === 0) {
+
+    // If both are empty, remove existing statements
+    if (correctStatementTiddlers.length === 0 && incorrectStatementTiddlers.length === 0) {
       return {
-        error: "Both thesis correct statements and incorrect statements must be non-empty arrays"
+        status: 'remove',
+        error: null
       };
     }
+
+    // Extract valid texts after filtering empty content
+    const validCorrectTexts = extractValidStatementTexts(correctStatementTiddlers, context);
+    const validIncorrectTexts = extractValidStatementTexts(incorrectStatementTiddlers, context);
+
+    // Check that after filtering, both groups still have valid statements
+    if ((validCorrectTexts.length > 0 && validIncorrectTexts.length === 0) ||
+      (validCorrectTexts.length === 0 && validIncorrectTexts.length > 0)) {
+      return {
+        status: 'error',
+        error: "Both thesis correct statements and incorrect statements must be provided together"
+      };
+    }
+
+    // If both have valid content, create new statements
+    if (validCorrectTexts.length > 0 && validIncorrectTexts.length > 0) {
+      return {
+        status: 'create',
+        error: null
+      };
+    }
+
+    // If all statements were empty, remove existing statements
     return {
-      correct: utils.stringifyList(csl),
-      incorrect: utils.stringifyList(isl)
+      status: 'remove',
+      error: null
     };
+  }
+
+  /**
+   * Creates permanent statement tiddlers from temporary statement tiddlers.
+   * Deduplicates statements by text content.
+   * @param {Array<string>} tempTiddlerTitles - Array of temporary statement tiddler titles.
+   * @param {boolean} isCorrect - True if these are correct statements, false for incorrect.
+   * @param {string} thesisId - ID of the thesis these statements belong to.
+   * @param {Object} context - Context object with wikiUtils, prefixes, tags.
+   * @returns {Array<string>} - Array of created permanent statement tiddler IDs.
+   */
+  function createStatementTiddlersFromTemp(tempTiddlerTitles, isCorrect, thesisId, context) {
+    const statementIds = [];
+    const statementPrefix = context.prefixes.statement;
+    const statementTag = context.tags.statement;
+    const correctnessTag = isCorrect ? context.tags.statementCorrect : context.tags.statementIncorrect;
+    const seenTexts = new Set();  // For deduplication
+
+    tempTiddlerTitles.forEach(tempTitle => {
+      const tempTiddler = context.wikiUtils.withTiddler(tempTitle, true);
+      if (tempTiddler.exists()) {
+        const text = utils.trimToUndefined(tempTiddler.getTiddlerField("text"));
+        if (text && !seenTexts.has(text)) {
+          seenTexts.add(text);
+          const statementTitle = context.wikiUtils.generateNewInternalTitle(statementPrefix);
+          const statementFields = {
+            title: statementTitle,
+            text: text,
+            tags: [statementTag, correctnessTag, thesisId]
+          };
+          context.wikiUtils.addTiddler(statementFields);
+          statementIds.push(statementTitle);
+        }
+      }
+    });
+
+    return statementIds;
+  }
+
+  /**
+   * Deletes statement tiddlers by their IDs.
+   * @param {Array<string>|string} statementIds - Array of statement IDs or string list of IDs.
+   * @param {Object} context - Context object with wikiUtils.
+   */
+  function deleteStatementTiddlers(statementIds, context) {
+    const ids = Array.isArray(statementIds) ? statementIds : utils.parseStringList(statementIds, false);
+    ids.forEach(id => {
+      const tiddler = context.wikiUtils.withTiddler(id, true);
+      if (tiddler.exists()) {
+        tiddler.doNotInvokeSequentiallyOnSameTiddler.deleteTiddler();
+      }
+    });
+  }
+
+  /**
+   * Deletes a thesis tiddler and all its associated statement tiddlers.
+   * @param {Object} thesisTiddler - Thesis tiddler wrapper object.
+   * @param {Object} context - Context object with wikiUtils.
+   */
+  function deleteThesisTiddler(thesisTiddler, context) {
+    // Delete associated statement tiddlers before deleting the thesis
+    const correctStatements = thesisTiddler.getTiddlerField("correct-statements");
+    const incorrectStatements = thesisTiddler.getTiddlerField("incorrect-statements");
+    if (correctStatements) {
+      deleteStatementTiddlers(correctStatements, context);
+    }
+    if (incorrectStatements) {
+      deleteStatementTiddlers(incorrectStatements, context);
+    }
+    thesisTiddler.doNotInvokeSequentiallyOnSameTiddler.deleteTiddler();
   }
 
   /**
@@ -168,8 +298,8 @@ Handling zest messages.
    * @param {string} [params.description] - Category description. (optional)
    * @param {string} [params.thesisText] - Thesis text. (optional)
    * @param {string} [params.thesisNote] - Thesis note. (optional)
-   * @param {Array} [params.thesisCorrectStatements] - Optional array of correct statements for thesis.
-   * @param {Array} [params.thesisIncorrectStatements] - Optional array of incorrect statements for thesis.
+   * @param {string} [params.correctStatementsTag] - Optional tag to find temporary correct statement tiddlers.
+   * @param {string} [params.incorrectStatementsTag] - Optional tag to find temporary incorrect statement tiddlers.
    * @throws Alerts if required fields are missing or domain not found, or statement validation fails.
    */
   exports.createCategory = function (params, widget, env) {
@@ -186,6 +316,8 @@ Handling zest messages.
     const domainId = utils.trimToUndefined(params.domainId);
     const thesisText = utils.trimToUndefined(params.thesisText);
     const thesisNote = utils.trimToUndefined(params.thesisNote);
+    const correctStatementsTag = utils.trimToUndefined(params.correctStatementsTag);
+    const incorrectStatementsTag = utils.trimToUndefined(params.incorrectStatementsTag);
     if (!name) {
       context.logger.alert(utils.formatString(alertMsg, "category name"));
       return;
@@ -194,14 +326,16 @@ Handling zest messages.
       context.logger.alert(utils.formatString(alertMsg, "domain id"));
       return;
     }
-    const thesisStatements = validateThesisStatements(
-      utils.trimToUndefined(params.thesisCorrectStatements),
-      utils.trimToUndefined(params.thesisIncorrectStatements));
-    if (thesisStatements.error) {
-      context.logger.alert(thesisStatements.error);
+    const correctStatementTiddlers = correctStatementsTag ?
+      context.wikiUtils.allTitlesWithTag(correctStatementsTag) || [] : [];
+    const incorrectStatementTiddlers = incorrectStatementsTag ?
+      context.wikiUtils.allTitlesWithTag(incorrectStatementsTag) || [] : [];
+    const validation = validateStatementTiddlers(correctStatementTiddlers, incorrectStatementTiddlers, context);
+    if (validation.status === 'error') {
+      context.logger.alert(validation.error);
       return;
     }
-    if ((thesisNote || thesisStatements.correct || thesisStatements.incorrect) && !thesisText) {
+    if ((thesisNote || validation.status === 'create') && !thesisText) {
       context.logger.alert(utils.formatString(alertMsg, "thesis text"));
       return;
     }
@@ -235,9 +369,11 @@ Handling zest messages.
       note: thesisNote,
       tags: [thesisTag, categoryTitle, "$:/srs/tags/scheduledForward"]
     };
-    if (thesisStatements.correct && thesisStatements.incorrect) {
-      thesisFields["correct-statements"] = thesisStatements.correct;
-      thesisFields["incorrect-statements"] = thesisStatements.incorrect;
+    if (validation.status === 'create') {
+      const correctStatementIds = createStatementTiddlersFromTemp(correctStatementTiddlers, true, thesisTitle, context);
+      const incorrectStatementIds = createStatementTiddlersFromTemp(incorrectStatementTiddlers, false, thesisTitle, context);
+      thesisFields["correct-statements"] = utils.stringifyList(correctStatementIds);
+      thesisFields["incorrect-statements"] = utils.stringifyList(incorrectStatementIds);
     }
     context.wikiUtils.addTiddler(thesisFields);
   };
@@ -394,7 +530,7 @@ Handling zest messages.
     }
     // Find theses that reference this category. For each thesis:
     // - if it is linked to more than one category, only detach this category
-    // - if it is linked exclusively to this category, delete the thesis
+    // - if it is linked exclusively to this category, delete the thesis and its statements
     const thesisTag = context.tags.thesis;
     const linkedTheses = context.wikiUtils.filterTiddlers(`[tag[${thesisTag}]tag[${categoryId}]]`);
     const categoryPrefix = context.prefixes.category;
@@ -410,8 +546,8 @@ Handling zest messages.
         // More than one category linked: remove only the deleted category from tags
         thesisTiddler.doNotInvokeSequentiallyOnSameTiddler.deleteTagsToTiddler([categoryId]);
       } else {
-        // Only linked to this category: delete the thesis
-        thesisTiddler.doNotInvokeSequentiallyOnSameTiddler.deleteTiddler();
+        // Only linked to this category: delete the thesis and its statements
+        deleteThesisTiddler(thesisTiddler, context);
       }
     }
     // Delete the category itself
@@ -424,8 +560,8 @@ Handling zest messages.
    * @param {string} params.categoryId - Category tiddler id. (required)
    * @param {string} params.text - Thesis text. (required)
    * @param {string} [params.note] - Thesis note.
-   * @param {Array} [params.correctStatements] - Optional array of correct statements for thesis.
-   * @param {Array} [params.incorrectStatements] - Optional array of incorrect statements for thesis.
+   * @param {string} [params.correctStatementsTag] - Optional tag to find temporary correct statement tiddlers.
+   * @param {string} [params.incorrectStatementsTag] - Optional tag to find temporary incorrect statement tiddlers.
    * @throws Alerts if required fields are missing or category not found, or statement validation fails.
    */
   exports.createThesis = function (params, widget, env) {
@@ -439,6 +575,8 @@ Handling zest messages.
     const categoryId = utils.trimToUndefined(params.categoryId);
     const thesisText = utils.trimToUndefined(params.text);
     const thesisNote = utils.trimToUndefined(params.note);
+    const correctStatementsTag = utils.trimToUndefined(params.correctStatementsTag);
+    const incorrectStatementsTag = utils.trimToUndefined(params.incorrectStatementsTag);
     if (!categoryId) {
       context.logger.alert("Category id is required");
       return;
@@ -447,11 +585,13 @@ Handling zest messages.
       context.logger.alert("Thesis text cannot be empty");
       return;
     }
-    const thesisStatements = validateThesisStatements(
-      utils.trimToUndefined(params.correctStatements),
-      utils.trimToUndefined(params.incorrectStatements));
-    if (thesisStatements.error) {
-      context.logger.alert(thesisStatements.error);
+    const correctStatementTiddlers = correctStatementsTag ?
+      context.wikiUtils.allTitlesWithTag(correctStatementsTag) || [] : [];
+    const incorrectStatementTiddlers = incorrectStatementsTag ?
+      context.wikiUtils.allTitlesWithTag(incorrectStatementsTag) || [] : [];
+    const validation = validateStatementTiddlers(correctStatementTiddlers, incorrectStatementTiddlers, context);
+    if (validation.status === 'error') {
+      context.logger.alert(validation.error);
       return;
     }
     const categoryTiddler = context.wikiUtils.withTiddler(categoryId);
@@ -468,9 +608,11 @@ Handling zest messages.
       note: thesisNote,
       tags: [thesisTag, categoryId, "$:/srs/tags/scheduledForward"]
     };
-    if (thesisStatements.correct && thesisStatements.incorrect) {
-      thesisFields["correct-statements"] = thesisStatements.correct;
-      thesisFields["incorrect-statements"] = thesisStatements.incorrect;
+    if (validation.status === 'create') {
+      const correctStatementIds = createStatementTiddlersFromTemp(correctStatementTiddlers, true, thesisTitle, context);
+      const incorrectStatementIds = createStatementTiddlersFromTemp(incorrectStatementTiddlers, false, thesisTitle, context);
+      thesisFields["correct-statements"] = utils.stringifyList(correctStatementIds);
+      thesisFields["incorrect-statements"] = utils.stringifyList(incorrectStatementIds);
     }
     context.wikiUtils.addTiddler(thesisFields);
   };
@@ -481,8 +623,8 @@ Handling zest messages.
    * @param {string} params.id - Thesis tiddler id. (required)
    * @param {string} params.text - New thesis text. (required)
    * @param {string} [params.note] - New thesis note.
-   * @param {Array} [params.correctStatements] - Optional array of correct statements for thesis.
-   * @param {Array} [params.incorrectStatements] - Optional array of incorrect statements for thesis.
+   * @param {string} [params.correctStatementsTag] - Optional tag to find temporary correct statement tiddlers.
+   * @param {string} [params.incorrectStatementsTag] - Optional tag to find temporary incorrect statement tiddlers.
    * @throws Alerts if id is missing, thesis not found, or text is empty, or statement validation fails.
    */
   exports.updateThesis = function (params, widget, env) {
@@ -490,9 +632,12 @@ Handling zest messages.
       wikiUtils: utils.getWikiUtils(widget.wiki),
       env: env,
       logger: new $tw.utils.Logger("Zest:updateThesis"),
+      prefixes: $tw.wiki.getTiddlerData("$:/plugins/midorum/zest/data/prefixes", []),
       tags: $tw.wiki.getTiddlerData("$:/plugins/midorum/zest/data/tags", []),
     };
     const thesisId = utils.trimToUndefined(params.id);
+    const correctStatementsTag = utils.trimToUndefined(params.correctStatementsTag);
+    const incorrectStatementsTag = utils.trimToUndefined(params.incorrectStatementsTag);
     if (!thesisId) {
       context.logger.alert("Thesis id is required");
       return;
@@ -508,26 +653,40 @@ Handling zest messages.
       context.logger.alert("Thesis text cannot be empty");
       return;
     }
-    const thesisStatements = validateThesisStatements(
-      utils.trimToUndefined(params.correctStatements),
-      utils.trimToUndefined(params.incorrectStatements));
-    if (thesisStatements.error) {
-      context.logger.alert(thesisStatements.error);
+    const correctStatementTiddlers = correctStatementsTag ?
+      context.wikiUtils.allTitlesWithTag(correctStatementsTag) || [] : [];
+    const incorrectStatementTiddlers = incorrectStatementsTag ?
+      context.wikiUtils.allTitlesWithTag(incorrectStatementsTag) || [] : [];
+    const validation = validateStatementTiddlers(correctStatementTiddlers, incorrectStatementTiddlers, context);
+    if (validation.status === 'error') {
+      context.logger.alert(validation.error);
       return;
     }
     const updateFields = {};
     updateFields.text = newText;
     updateFields.note = newNote;
-    if (!thesisStatements.correct && !thesisStatements.incorrect) {
-      // If both are undefined, remove both fields
+    const oldCorrectStatements = thesisTiddler.getTiddlerField("correct-statements");
+    const oldIncorrectStatements = thesisTiddler.getTiddlerField("incorrect-statements");
+    if (validation.status === 'remove') {
       updateFields["correct-statements"] = undefined;
       updateFields["incorrect-statements"] = undefined;
-    } else if (thesisStatements.correct && thesisStatements.incorrect) {
-      updateFields["correct-statements"] = thesisStatements.correct;
-      updateFields["incorrect-statements"] = thesisStatements.incorrect;
-    } else {
-      context.logger.alert("Internal error: thesis statement validation failed");
-      return;
+      if (oldCorrectStatements) {
+        deleteStatementTiddlers(oldCorrectStatements, context);
+      }
+      if (oldIncorrectStatements) {
+        deleteStatementTiddlers(oldIncorrectStatements, context);
+      }
+    } else if (validation.status === 'create') {
+      const correctStatementIds = createStatementTiddlersFromTemp(correctStatementTiddlers, true, thesisId, context);
+      const incorrectStatementIds = createStatementTiddlersFromTemp(incorrectStatementTiddlers, false, thesisId, context);
+      updateFields["correct-statements"] = utils.stringifyList(correctStatementIds);
+      updateFields["incorrect-statements"] = utils.stringifyList(incorrectStatementIds);
+      if (oldCorrectStatements) {
+        deleteStatementTiddlers(oldCorrectStatements, context);
+      }
+      if (oldIncorrectStatements) {
+        deleteStatementTiddlers(oldIncorrectStatements, context);
+      }
     }
     thesisTiddler.doNotInvokeSequentiallyOnSameTiddler.updateTiddler(updateFields);
   };
@@ -622,7 +781,7 @@ Handling zest messages.
   }
 
   /**
-   * Delete a thesis.
+   * Delete a thesis and its associated statement tiddlers.
    * @param {Object} params - Parameters object.
    * @param {string} params.id - Thesis tiddler id. (required)
    * @throws Alerts if id is missing, or thesis not found.
@@ -645,7 +804,7 @@ Handling zest messages.
       context.logger.alert("Thesis not found");
       return;
     }
-    thesisTiddler.doNotInvokeSequentiallyOnSameTiddler.deleteTiddler();
+    deleteThesisTiddler(thesisTiddler, context);
   };
 
   exports.migrate1 = function (params, widget, env) {
@@ -711,6 +870,134 @@ Handling zest messages.
     const summaryText = logLines.join("\n");
     // create or update the log tiddler
     context.wikiUtils.addTiddler({ title: logTitle, tags: [context.tags.log, context.tags.migration1], text: summaryText });
+  }
+
+  /**
+   * Migration 2: Convert old format statements (text in string list) to new format (statement tiddlers).
+   * Old format: correct-statements and incorrect-statements fields contain string lists of statement texts
+   * New format: correct-statements and incorrect-statements fields contain string lists of statement tiddler IDs
+   * @param {Object} params - Parameters object (unused for this migration).
+   */
+  exports.migrate2 = function (params, widget, env) {
+    const context = {
+      wikiUtils: utils.getWikiUtils(widget.wiki),
+      env: env,
+      logger: new $tw.utils.Logger("Zest:migrate2"),
+      tags: $tw.wiki.getTiddlerData("$:/plugins/midorum/zest/data/tags", []),
+      prefixes: $tw.wiki.getTiddlerData("$:/plugins/midorum/zest/data/prefixes", []),
+    };
+    const thesisTag = context.tags.thesis;
+    const allTheses = context.wikiUtils.allTitlesWithTag(thesisTag) || [];
+    const migrationTime = Date.now();
+    const migrated = [];
+    const skipped = [];
+
+    for (let thesisTitle of allTheses) {
+      const thesisTiddler = context.wikiUtils.withTiddler(thesisTitle);
+      if (!thesisTiddler.exists()) {
+        skipped.push({ title: thesisTitle, reason: "not found" });
+        continue;
+      }
+
+      // Check if already migrated
+      const alreadyMigrated = thesisTiddler.getTiddlerField("zest-migrated-2");
+      if (alreadyMigrated) {
+        skipped.push({ title: thesisTitle, reason: "already migrated" });
+        continue;
+      }
+
+      // Get old format statement fields
+      const oldCorrectStatements = thesisTiddler.getTiddlerField("correct-statements");
+      const oldIncorrectStatements = thesisTiddler.getTiddlerField("incorrect-statements");
+
+      // If no statements, skip (but mark as migrated)
+      if (!oldCorrectStatements && !oldIncorrectStatements) {
+        thesisTiddler.doNotInvokeSequentiallyOnSameTiddler.updateTiddler({ "zest-migrated-2": String(migrationTime) });
+        skipped.push({ title: thesisTitle, reason: "no statements" });
+        continue;
+      }
+
+      // Parse old format statement texts
+      const correctStatementTexts = oldCorrectStatements ? utils.parseStringList(oldCorrectStatements, false) : [];
+      const incorrectStatementTexts = oldIncorrectStatements ? utils.parseStringList(oldIncorrectStatements, false) : [];
+
+      // Check if statements look like IDs (new format) rather than texts
+      // Simple heuristic: if all statements start with "$:/zest/db/statement/", assume already new format
+      const allCorrectLookLikeIds = correctStatementTexts.every(s => s.startsWith("$:/zest/db/statement/"));
+      const allIncorrectLookLikeIds = incorrectStatementTexts.every(s => s.startsWith("$:/zest/db/statement/"));
+
+      if ((correctStatementTexts.length === 0 || allCorrectLookLikeIds) &&
+        (incorrectStatementTexts.length === 0 || allIncorrectLookLikeIds)) {
+        thesisTiddler.doNotInvokeSequentiallyOnSameTiddler.updateTiddler({ "zest-migrated-2": String(migrationTime) });
+        skipped.push({ title: thesisTitle, reason: "already new format" });
+        continue;
+      }
+
+      // Create new statement tiddlers
+      const correctStatementIds = [];
+      const incorrectStatementIds = [];
+
+      correctStatementTexts.forEach(text => {
+        const trimmed = utils.trimToUndefined(text);
+        if (trimmed) {
+          const statementTitle = context.wikiUtils.generateNewInternalTitle(context.prefixes.statement);
+          context.wikiUtils.addTiddler({
+            title: statementTitle,
+            text: trimmed,
+            tags: [context.tags.statement, context.tags.statementCorrect, thesisTitle]
+          });
+          correctStatementIds.push(statementTitle);
+        }
+      });
+
+      incorrectStatementTexts.forEach(text => {
+        const trimmed = utils.trimToUndefined(text);
+        if (trimmed) {
+          const statementTitle = context.wikiUtils.generateNewInternalTitle(context.prefixes.statement);
+          context.wikiUtils.addTiddler({
+            title: statementTitle,
+            text: trimmed,
+            tags: [context.tags.statement, context.tags.statementIncorrect, thesisTitle]
+          });
+          incorrectStatementIds.push(statementTitle);
+        }
+      });
+
+      // Update thesis with new statement ID lists
+      const updateFields = {
+        "correct-statements": correctStatementIds.length > 0 ? utils.stringifyList(correctStatementIds) : undefined,
+        "incorrect-statements": incorrectStatementIds.length > 0 ? utils.stringifyList(incorrectStatementIds) : undefined,
+        "zest-migrated-2": String(migrationTime)
+      };
+
+      thesisTiddler.doNotInvokeSequentiallyOnSameTiddler.updateTiddler(updateFields);
+      migrated.push(thesisTitle);
+    }
+
+    // Write migration summary to a log tiddler
+    const logTitle = context.prefixes.log + "migrate2_" + migrationTime;
+    const logLines = [];
+    logLines.push(`Migration run at: ${new Date(migrationTime).toISOString()}`);
+    logLines.push(`\nMigration type: migrate2`);
+    logLines.push(`\nMigration cause: changed statement storage from text lists to separate tiddlers`);
+    logLines.push(`\nMigrated count: ${migrated.length}`);
+    logLines.push(`\nSkipped count: ${skipped.length}`);
+    if (migrated.length) {
+      logLines.push("\n!! Migrated thesis titles:\n");
+      for (let t of migrated) {
+        logLines.push(`* [[${t}]]`);
+      }
+    }
+    if (skipped.length) {
+      logLines.push("\n!! Skipped thesis titles (reason):\n");
+      for (let s of skipped) {
+        logLines.push(`* [[${s.title}]] (${s.reason})`);
+      }
+    }
+    const summaryText = logLines.join("\n");
+    context.wikiUtils.addTiddler({ title: logTitle, tags: [context.tags.log, context.tags.migration2], text: summaryText });
+
+    context.logger.alert(`Migration 2 complete: ${migrated.length} migrated, ${skipped.length} skipped`);
   }
 
 })();

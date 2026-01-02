@@ -105,6 +105,12 @@ Adds listeners for zest messages.
       messageHandler.migrate1(params, widget, $tw);
     });
 
+    $tw.rootWidget.addEventListener("tm-zest-migrate-2", function (event) {
+      const widget = event.widget || $tw.rootWidget;
+      const params = event.paramObject || {};
+      messageHandler.migrate2(params, widget, $tw);
+    });
+
   };
 
 })();

@@ -8,7 +8,7 @@ type: text/vnd.tiddlywiki
     incorrectStatementsTag,
     hasStatementsField:'hasStatements'
 )
-<$let statementHolderBaseTitle="$:/temp/zest/statement/holder" >
+<$let statementHolderBaseTitle="$:/temp/zest/statement/holder">
     <p>
         <$radio tiddler=<<state>> field=<<hasStatementsField>> value="1" 
             style.margin="0 0.25em 0 0.5em"
@@ -27,23 +27,26 @@ type: text/vnd.tiddlywiki
 
     <$reveal type="match" stateTitle=<<state>> stateField=<<hasStatementsField>> text="1" >
         <p>
-            <div class="zest-correct-statement-input-section zest-wide-input" style="margin-top:0.7em;">
+            <div class="zest-correct-statement-input-section zest-wide-input">
                 <label>
-                    <div style="border:1px solid #4caf50;border-radius:4px;padding:0.7em 1em 1em 1em;margin-bottom:0.7em;">
+                    <div class="zest-statement-box-correct">
                         Correct statements:<br/>
-                        <span style="font-size:smaller;color:#888;">Add one or more correct statements about the thesis.</span>
+                        <span class="zest-hint">Add one or more correct statements about the thesis.</span>
                         <$list filter="[tag<correctStatementsTag>]" variable="statementField">
-                            <div class="zest-correct-statement-input" style="display:flex;align-items:center;gap:0.5em;margin-top:0.3em;">
-                                <$edit-text tiddler=<<statementField>> tag="input" type="text" style="flex:1;"/>
-                                <$list filter="[tag<correctStatementsTag>count[]compare:number:gt[1]]" variable="_">
-                                    <$button class="tc-btn-invisible tc-tiddlylink">
-                                    [Delete]
-                                        <$action-deletetiddler $tiddler=<<statementField>> />
-                                    </$button>
-                                </$list>
+                            <div class="zest-correct-statement-input zest-statement-input-wrapper">
+                                <$transclude $tiddler=<<zest-l wiki-text-editor>> tiddler=<<statementField>> >
+                                    <$fill $name="buttons">
+                                        <$list filter="[tag<correctStatementsTag>count[]compare:number:gt[1]]" variable="_">
+                                            <$button class="tc-btn-invisible tc-tiddlylink">
+                                                [Delete]
+                                                <$action-deletetiddler $tiddler=<<statementField>> />
+                                            </$button>
+                                        </$list>
+                                    </$fill>
+                                </$transclude>
                             </div>
                         </$list>
-                        <div style="margin-top=0.5em">
+                        <div class="zest-mt-0-5em">
                             <$button class="tc-btn-invisible tc-tiddlylink">
                                 [Add another correct statement]
                                 <$action-createtiddler $basetitle=<<statementHolderBaseTitle>> tags=<<correctStatementsTag>> />
@@ -55,30 +58,33 @@ type: text/vnd.tiddlywiki
         </p>
 
         <p>
-            <div class="zest-incorrect-statement-input-section zest-wide-input" style="margin-top:0.7em;">
-            <label>
-                <div style="border:1px solid #f44336;border-radius:4px;padding:0.7em 1em 1em 1em;margin-bottom:0.7em;">
-                    Incorrect statements:<br/>
-                    <span style="font-size:smaller;color:#888;">Add one or more incorrect statements about the thesis.</span>
-                    <$list filter="[tag<incorrectStatementsTag>]" variable="statementField">
-                        <div class="zest-incorrect-statement-input" style="display:flex;align-items:center;gap:0.5em;margin-top:0.3em;">
-                            <$edit-text tiddler=<<statementField>> tag="input" type="text" style="flex:1;"/>
-                            <$list filter="[tag<incorrectStatementsTag>count[]compare:number:gt[1]]" variable="_">
-                                <$button class="tc-btn-invisible tc-tiddlylink">
-                                [Delete]
-                                    <$action-deletetiddler $tiddler=<<statementField>> />
-                                </$button>
-                            </$list>
+            <div class="zest-incorrect-statement-input-section zest-wide-input zest-mt-0-7em">
+                <label>
+                    <div class="zest-statement-box-incorrect">
+                        Incorrect statements:<br/>
+                        <span class="zest-hint">Add one or more incorrect statements about the thesis.</span>
+                        <$list filter="[tag<incorrectStatementsTag>]" variable="statementField">
+                            <div class="zest-incorrect-statement-input zest-statement-input-wrapper">
+                                <$transclude $tiddler=<<zest-l wiki-text-editor>> tiddler=<<statementField>> >
+                                    <$fill $name="buttons">
+                                        <$list filter="[tag<incorrectStatementsTag>count[]compare:number:gt[1]]" variable="_">
+                                            <$button class="tc-btn-invisible tc-tiddlylink">
+                                                [Delete]
+                                                <$action-deletetiddler $tiddler=<<statementField>> />
+                                            </$button>
+                                        </$list>
+                                    </$fill>
+                                </$transclude>
+                            </div>
+                        </$list>
+                        <div class="zest-mt-0-5em">
+                            <$button class="tc-btn-invisible tc-tiddlylink">
+                                [Add another incorrect statement]
+                                <$action-createtiddler $basetitle=<<statementHolderBaseTitle>> tags=<<incorrectStatementsTag>> />
+                            </$button>
                         </div>
-                    </$list>
-                    <div style="margin-top=0.5em">
-                        <$button class="tc-btn-invisible tc-tiddlylink">
-                            [Add another incorrect statement]
-                            <$action-createtiddler $basetitle=<<statementHolderBaseTitle>> tags=<<incorrectStatementsTag>> />
-                        </$button>
                     </div>
-                </div>
-            </label>
+                </label>
             </div>
         </p>
     </$reveal>

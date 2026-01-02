@@ -19,14 +19,14 @@ type: text/vnd.tiddlywiki
     <p>
         <ul>
             <$list filter="[<ref>get[correct-statements]enlist-input[]] =[<ref>get[incorrect-statements]enlist-input[]]" >
-                <li><$text text=<<currentTiddler>> /></li>
+                <li><$transclude tiddler=<<currentTiddler>> mode="block"/></li>
             </$list>
         </ul>
     </p>
 
     <!-- note -->
     <$reveal type="match" stateTitle=<<note-model>> stateIndex=<<ref>> text="1" >
-        <p class="zest-thesis-note-text" style="color:grey;">
+        <p class="zest-thesis-note-text zest-grey-text">
             <$transclude $tiddler=<<ref>> $field="note" $mode="block"/>
         </p>
         <p class="zest-thesis-note-categories">
@@ -47,7 +47,7 @@ type: text/vnd.tiddlywiki
     </$reveal>
 
     <!-- buttons -->
-    <div style="margin-top:0.5em;">
+    <div class="zest-mt-0-5em">
         <$button class="tc-btn-invisible tc-tiddlylink">
             <$reveal type="match" stateTitle=<<note-model>> stateIndex=<<ref>> text="1" >
                 [Hide note]
@@ -58,24 +58,28 @@ type: text/vnd.tiddlywiki
                 <$action-setfield $tiddler=<<note-model>> $index=<<ref>> $value="1"/>
             </$reveal>
         </$button>
-        <$button class="tc-btn-invisible tc-tiddlylink zest-edit-thesis-button" style="margin-left:1em;">
+        <$button class="tc-btn-invisible tc-tiddlylink zest-edit-thesis-button zest-ml-1em">
             [Edit]
             <$action-deletetiddler $tiddler=<<state>> />
             <$action-deletetiddler $filter="[tag<correctStatementsTag>] [tag<incorrectStatementsTag>]" />
             <$tiddler tiddler=<<ref>> >
                 <$action-setfield $tiddler=<<state>> $field="thesis-text" $value={{!!text}}/>
                 <$action-setfield $tiddler=<<state>> $field="thesis-note" $value={{!!note}}/>
-                <$list filter="[<ref>get[correct-statements]enlist-input[]]" >
-                    <$action-createtiddler $basetitle=<<statementHolderBaseTitle>> tags=<<correctStatementsTag>> text=<<currentTiddler>> />
-                    <$action-setfield $tiddler=<<state>> $field=<<hasStatementsField>> $value="1"/>
+                <$list filter="[<ref>get[correct-statements]enlist-input[]]" variable="statementId">
+                    <$tiddler tiddler=<<statementId>> >
+                        <$action-createtiddler $basetitle=<<statementHolderBaseTitle>> tags=<<correctStatementsTag>> text={{!!text}} />
+                        <$action-setfield $tiddler=<<state>> $field=<<hasStatementsField>> $value="1"/>
+                    </$tiddler>
                 </$list>
-                <$list filter="[<ref>get[incorrect-statements]enlist-input[]]" >
-                    <$action-createtiddler $basetitle=<<statementHolderBaseTitle>> tags=<<incorrectStatementsTag>> text=<<currentTiddler>> />
+                <$list filter="[<ref>get[incorrect-statements]enlist-input[]]" variable="statementId">
+                    <$tiddler tiddler=<<statementId>> >
+                        <$action-createtiddler $basetitle=<<statementHolderBaseTitle>> tags=<<incorrectStatementsTag>> text={{!!text}} />
+                    </$tiddler>
                 </$list>
                 <$action-setfield $tiddler=<<state>> $field="text" $value=<<ref>> />
             </$tiddler>
         </$button>
-        <span style="margin-left:1em;" >
+        <span class="zest-ml-1em" >
             <$transclude $tiddler=<<zest-l delete-confirm-block>> 
                 qualifier=<<ref>>
                 outsideDeleteButtonText="[Delete]"

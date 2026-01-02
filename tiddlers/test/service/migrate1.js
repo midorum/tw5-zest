@@ -21,8 +21,8 @@ describe("The migrate1 service", () => {
         // consoleDebugSpy.and.callThrough();
         // loggerSpy.and.callThrough();
         const options = utils.setupWiki();
-        const domains = options.push.domains([{ name: 'Domain1' }]);
-        const categories = options.push.categories_v0([{ name: "Old schema", domains: domains }])
+        const domain = options.push.domain({ name: 'Domain1' });
+        const categories = options.push.categories_v0([{ name: "Old schema", domains: [domain.domain] }])
         options.debug.all("before migration");
         messageHandler.migrate1({}, options.widget, options.env);
         options.debug.all("after migration");
@@ -36,8 +36,8 @@ describe("The migrate1 service", () => {
         // consoleDebugSpy.and.callThrough();
         // loggerSpy.and.callThrough();
         const options = utils.setupWiki();
-        const domains = options.push.domains([{ name: 'Domain1' }]);
-        const categories = options.push.categories_v1([{ name: "New schema", domains: domains, description: "Some description" }])
+        const domain = options.push.domain({ name: 'Domain1' });
+        const categories = options.push.categories_v1([{ name: "New schema", domains: [domain.domain], description: "Some description" }])
         options.debug.all("before migration");
         messageHandler.migrate1({}, options.widget, options.env);
         options.debug.all("after migration");
@@ -96,14 +96,14 @@ describe("The migrate1 service", () => {
         // consoleDebugSpy.and.callThrough();
         // loggerSpy.and.callThrough();
         const options = utils.setupWiki();
-        const domains = options.push.domains([{ name: 'Domain1' }]);
+        const domain = options.push.domain({ name: 'Domain1' });
         const old_schema_categories = options.push.categories_v0([
-            { name: "Old schema", domains: domains },
-            { name: "Old schema 2", domains: domains }
+            { name: "Old schema", domains: [domain.domain] },
+            { name: "Old schema 2", domains: [domain.domain] }
         ])
         const new_schema_categories = options.push.categories_v1([
-            { name: "New schema", domains: domains, description: "Some description" },
-            { name: "New schema 2", domains: domains, description: "Some description" }
+            { name: "New schema", domains: [domain.domain], description: "Some description" },
+            { name: "New schema 2", domains: [domain.domain], description: "Some description" }
         ]
         )
         options.debug.all("\nbefore migration");
@@ -136,8 +136,8 @@ describe("The migrate1 service", () => {
         // consoleDebugSpy.and.callThrough();
         // loggerSpy.and.callThrough();
         const options = utils.setupWiki();
-        const domains = options.push.domains([{ name: 'Domain1' }]);
-        const categories = options.push.categories_v0([{ name: "Old schema", domains: domains }])
+        const domain = options.push.domain({ name: 'Domain1' });
+        const categories = options.push.categories_v0([{ name: "Old schema", domains: [domain.domain] }])
         options.debug.all("\nbefore first migration");
         messageHandler.migrate1({}, options.widget, options.env);
         const afterFirstRun = options.wiki.getTiddler(categories[0].title);

@@ -39,11 +39,9 @@ describe("The detachThesis service", () => {
 
     it("should fail when the thesis does not exist", () => {
         const options = utils.setupWiki();
-        const domains = options.push.domains([
-            { name: "Domain1" },
-        ]);
-        const categories = options.push.categories([
-            { name: "Category1", domains: domains },
+        const domain = options.push.domain({ name: "Domain1" });
+        const categories = options.push.categories_last([
+            { name: "Category1", domains: [domain.domain] },
         ])
         const params = { thesisId: "$:/zest/db/thesis/nonexistent", categoryId: categories[0].title };
         const expectedMessage = "Thesis not found";
@@ -66,14 +64,12 @@ describe("The detachThesis service", () => {
 
     it("should fail when the thesis is not linked to the category", () => {
         const options = utils.setupWiki();
-        const domains = options.push.domains([
-            { name: "Domain1" },
-        ]);
-        const categories = options.push.categories([
-            { name: "Category1", domains: domains },
-            { name: "Category2", domains: domains }
+        const domain = options.push.domain({ name: "Domain1" });
+        const categories = options.push.categories_last([
+            { name: "Category1", domains: [domain.domain] },
+            { name: "Category2", domains: [domain.domain] }
         ])
-        const theses = options.push.theses([
+        const theses = options.push.theses_last([
             { text: "Thesis1", categories: categories.slice(0, 1) },
         ])
         const params = { thesisId: theses[0].title, categoryId: categories[1].title };
@@ -86,14 +82,12 @@ describe("The detachThesis service", () => {
 
     it("should fail when the thesis is linked to only one category", () => {
         const options = utils.setupWiki();
-        const domains = options.push.domains([
-            { name: "Domain1" },
-        ]);
-        const categories = options.push.categories([
-            { name: "Category1", domains: domains },
-            { name: "Category2", domains: domains }
+        const domain = options.push.domain({ name: "Domain1" });
+        const categories = options.push.categories_last([
+            { name: "Category1", domains: [domain.domain] },
+            { name: "Category2", domains: [domain.domain] }
         ])
-        const theses = options.push.theses([
+        const theses = options.push.theses_last([
             { text: "Thesis1", categories: categories.slice(0, 1) },
         ])
         const params = { thesisId: theses[0].title, categoryId: categories[0].title };
@@ -107,14 +101,12 @@ describe("The detachThesis service", () => {
     it("should detach the category from the thesis if more than one category is linked", () => {
         // loggerSpy.and.callThrough();
         const options = utils.setupWiki();
-        const domains = options.push.domains([
-            { name: "Domain1" },
-        ]);
-        const categories = options.push.categories([
-            { name: "Category1", domains: domains },
-            { name: "Category2", domains: domains }
+        const domain = options.push.domain({ name: "Domain1" });
+        const categories = options.push.categories_last([
+            { name: "Category1", domains: [domain.domain] },
+            { name: "Category2", domains: [domain.domain] }
         ])
-        const theses = options.push.theses([
+        const theses = options.push.theses_last([
             { text: "Thesis1", categories: categories },
         ])
         const params = { thesisId: theses[0].title, categoryId: categories[1].title };

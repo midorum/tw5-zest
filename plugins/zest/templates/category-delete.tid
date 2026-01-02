@@ -5,7 +5,7 @@ type: text/vnd.tiddlywiki
 \parameters (
  ref
 )
-<div style="margin-top:1em;">
+<div class="zest-mt-1em">
     <$transclude $tiddler=<<zest-l delete-confirm-block>> 
         qualifier=<<ref>>
         outsideDeleteButtonText="[Delete Category]"
