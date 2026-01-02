@@ -1,4 +1,4 @@
-title: Hello form Zest!
+title: Hello from Zest!
 type: text/vnd.tiddlywiki
 
 ! {{$:/plugins/midorum/zest!!description}}

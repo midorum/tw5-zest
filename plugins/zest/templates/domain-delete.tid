@@ -1,0 +1,17 @@
+title: $:/plugins/midorum/zest/templates/domain-delete
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+\parameters (
+    ref
+)
+<div class="zest-mt-1em">
+    <$button class="tc-btn-invisible tc-tiddlylink zest-error-text">
+        [Delete Domain]
+        <$action-confirm $message="Do you wish to delete this domain? This cannot be undone!">
+            <$action-sendmessage $message="tm-zest-delete-domain" id=<<ref>>/>
+            <$action-sendmessage $message="tm-close-tiddler"/>
+            <$action-navigate $to="Zest Home"/>
+        </$action-confirm>
+    </$button>
+</div>

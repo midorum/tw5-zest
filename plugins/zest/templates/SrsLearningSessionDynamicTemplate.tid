@@ -345,7 +345,7 @@ type: text/vnd.tiddlywiki
             <$list variable="questionCard" filter="[all[shadows+tiddlers]tag[$:/srs/tags/forwardQuestionCard]field:srs-current-type<current-type>field:zest-question-type<question-type>last[]]" >
                 <$transclude $tiddler=<<questionCard>> src=<<current-src>> random=<<random>> correct-answers-count=<<correct-answers-count>> >
                     <$fill $name="statements">
-                        <$transclude $tiddler="$:/plugins/midorum/zest/templates/thesis-statements-selector" 
+                        <$transclude $tiddler=<<zest-l thesis-statements-selector>> 
                             state=<<state>> 
                             selectedStatementsFieldName=<<selectedStatementsFieldName>> checkedStatementsFieldName=<<checkedStatementsFieldName>>
                             src=<<current-src>> random=<<random>> correct-answers-count=<<correct-answers-count>> 

@@ -24,8 +24,9 @@ type: text/vnd.tiddlywiki
                 <$view tiddler=<<tag-ref>> field=<<tagDisplayFieldName>> format="text" />
             </$list>
             <$list filter="[<isClickable>compare:string:eq[true]]" >
-                <$button 
-                    tag='span' 
+                <$button
+                    tag='span'
+                    class="zest-clickable-tag-button"
                     style.cursor="pointer"
                 >
                     <$view tiddler=<<tag-ref>> field=<<tagDisplayFieldName>> format="text" />
@@ -33,10 +34,10 @@ type: text/vnd.tiddlywiki
                 </$button>
             </$list>
             <$list filter="[<removeTagButton>compare:string:eq[true]]" >
-                <$button 
-                    tag='span' 
-                    class="tc-remove-tag-button" 
-                    style.fill=<<background>> 
+                <$button
+                    tag='span'
+                    class="tc-remove-tag-button zest-remove-tag-button"
+                    style.fill=<<background>>
                     style.font-size="0.75em"
                     style.line-height="0.5em"
                 >
@@ -47,14 +48,15 @@ type: text/vnd.tiddlywiki
         </span>
     </$list>
     <$list filter="[<addTagButton>compare:string:eq[true]]" >
-        <span class="tc-tag-label" style=`margin:0 0.25em;background-color:transparent;border:solid thin $(color)$;color:$(color)$;`>
-            <$button 
-                tag='span' 
+        <span class="tc-tag-label zest-add-tag-button-container" style=`margin:0 0.25em;background-color:transparent;border:solid thin $(color)$;color:$(color)$;`>
+            <$button
+                tag='span'
+                class="zest-add-tag-button"
                 style.cursor="pointer"
                 popup=`$:/state/popup/tag-pane-template/$(qualifier)$`
             ><<addTagButtonName>></$button>
         </span>
-        <$reveal state=`$:/state/popup/tag-pane-template/$(qualifier)$` type="popup" position="below" animate="yes" class="tc-drop-down" >
+        <$reveal state=`$:/state/popup/tag-pane-template/$(qualifier)$` type="popup" position="below" animate="yes" class="tc-drop-down zest-tag-pane-dropdown" >
             <$list filter="[<enablePopupTemplate>compare:string:eq[true]]" >
                 <$slot $name="popup-template"/>
             </$list>
@@ -63,6 +65,7 @@ type: text/vnd.tiddlywiki
                     <$edit-text tiddler=<<searchState>>
                         field="text"
                         tag="input"
+                        class="zest-tag-pane-search-input"
                         focus="true"
                         focusSelectFromStart=<<focusSelectFromStart>>
                         focusSelectFromEnd=<<focusSelectFromEnd>>
@@ -70,7 +73,7 @@ type: text/vnd.tiddlywiki
                     <$set name=predicate tiddler=<<searchState>> field="text" >
                         <$list filter="[<predicate>is[blank]]" >
                             <$list filter=<<defaultListFilter>> variable="selected">
-                                <$button class="tc-btn-invisible tc-tiddlylink">
+                                <$button class="tc-btn-invisible tc-tiddlylink zest-tag-pane-item">
                                     <$view tiddler=<<selected>> field=<<itemFieldName>> format="text" />
                                     <$slot $name="item-select-action" />
                                 </$button>
@@ -79,7 +82,7 @@ type: text/vnd.tiddlywiki
                         <$list filter="[<predicate>!is[blank]]" >
                             <$let pattern=`(?i)$(predicate)$` >
                                 <$list filter=<<searchFilter>> variable="selected">
-                                    <$button class="tc-btn-invisible tc-tiddlylink">
+                                    <$button class="tc-btn-invisible tc-tiddlylink zest-tag-pane-item">
                                         <$view tiddler=<<selected>> field=<<itemFieldName>> format="text" />
                                         <$slot $name="item-select-action" />
                                     </$button>

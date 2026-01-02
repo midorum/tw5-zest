@@ -1,0 +1,37 @@
+title: $:/plugins/midorum/zest/templates/category-theses
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+\parameters (
+    ref
+)
+<h2>Theses</h2>
+<$list filter="[tag[$:/zest/tags/thesis]tag<ref>]" variable="thesis" emptyMessage="There are no theses yet.">
+    <div class="zest-thesis-container zest-mb-1em" data-thesis-ref=<<thesis>>>
+        <hr/>
+        <$let state=`$:/temp/zest/thesis/editor/$(thesis)$` 
+            correctStatementsTag=`$:/temp/zest/statement/correct/$(thesis)$` 
+            incorrectStatementsTag=`$:/temp/zest/statement/incorrect/$(thesis)$` 
+            hasStatementsField='hasStatements'
+        >
+            <$reveal type="match" stateTitle=<<state>> stateField="text" text=<<thesis>> >
+                <$transclude $tiddler=<<zest-l thesis-edit>> 
+                    ref=<<thesis>> 
+                    state=<<state>>
+                    correctStatementsTag=<<correctStatementsTag>>
+                    incorrectStatementsTag=<<incorrectStatementsTag>>
+                    hasStatementsField=<<hasStatementsField>>
+                />
+            </$reveal>
+            <$reveal type="nomatch" stateTitle=<<state>> stateField="text" text=<<thesis>> >
+                <$transclude $tiddler=<<zest-l thesis-view>> 
+                    ref=<<thesis>> 
+                    state=<<state>>
+                    correctStatementsTag=<<correctStatementsTag>>
+                    incorrectStatementsTag=<<incorrectStatementsTag>>
+                    hasStatementsField=<<hasStatementsField>>
+                />
+            </$reveal>
+        </$let>
+    </div>
+</$list>

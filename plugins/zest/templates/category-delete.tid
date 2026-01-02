@@ -1,0 +1,22 @@
+title: $:/plugins/midorum/zest/templates/category-delete
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+\parameters (
+ ref
+)
+<div class="zest-mt-1em">
+    <$transclude $tiddler=<<zest-l delete-confirm-block>> 
+        qualifier=<<ref>>
+        outsideDeleteButtonText="[Delete Category]"
+        insideDeleteButtonText="[Delete Category]"
+        insideCancelButtonText="[Cancel]"
+        warningText="WARNING: This will delete the category and all its exclusive theses. THIS CANNOT BE UNDONE!"
+    >
+        <$fill $name="deleteActions" >
+            <$action-sendmessage $message="tm-zest-delete-category" id=<<ref>>/>
+            <$action-sendmessage $message="tm-close-tiddler"/>
+            <$action-navigate $to="Domain"/>
+        </$fill>
+    </$transclude>
+</div>

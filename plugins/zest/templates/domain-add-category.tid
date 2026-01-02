@@ -1,0 +1,97 @@
+title: $:/plugins/midorum/zest/templates/domain-add-category
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+\parameters (
+    ref
+)
+<div class="zest-mt-1em">
+    <$let state=`$:/temp/zest/category/create/$(ref)$`
+        correctStatementsTag=`$:/temp/zest/statement/correct/$(ref)$`
+        incorrectStatementsTag=`$:/temp/zest/statement/incorrect/$(ref)$`
+    >
+        <$list filter="[<state>get[text]match[1]]">
+            <div class="zest-form-container">
+
+                <!-- New category name -->
+                <div class="zest-wide-input">
+                    <label>
+                        Category name:<br/>
+                        <span class="zest-hint">Enter a unique name for the category.</span><br/>
+                        <$edit-text tiddler=<<state>> field="categoryName" default="" tag="input" />
+                    </label>
+                </div>
+                <!-- Duplicate category name check -->
+                <$let catName={{{ [<state>get[categoryName]] }}} >
+                    <$list filter="[<catName>!is[blank]]" variable="_">
+                        <$list filter="[tag[$:/zest/tags/category]tag<ref>field:name<catName>]" variable="existingCat">
+                            <div class="zest-warning-text zest-mt-0-5em zest-mb-0-5em">
+                            A category with this name already exists in this domain.
+                            <$button class="tc-btn-invisible tc-tiddlylink zest-ml-1em">
+                                [Edit existing category]
+                                <$action-deletetiddler $tiddler=<<state>>/>
+                                <$action-deletetiddler $filter="[tag<correctStatementsTag>] [tag<incorrectStatementsTag>]" />
+                                <$transclude $tiddler=<<zest-l navigate-to-category>> ref=<<existingCat>> />
+                            </$button>
+                            </div>
+                        </$list>
+                    </$list>
+                </$let>
+
+                <div class="zest-wide-input zest-mt-0-5em">
+                    <label>
+                        Category Description:<br/>
+                        <span class="zest-hint">Enter an optioanl category description.</span><br/>
+                        <$transclude $tiddler=<<zest-l wiki-text-editor>>
+                            tiddler=<<state>>
+                            field="categoryDescription"
+                            minHeight="3em"
+                        />
+                    </label>
+                </div>
+                
+                <$transclude $tiddler=<<zest-l thesis-create>> 
+                    hint="Enter a first thesis that describes this category." 
+                    state=<<state>>
+                    correctStatementsTag=<<correctStatementsTag>>
+                    incorrectStatementsTag=<<incorrectStatementsTag>>
+                />
+
+                <!-- Create the category action or cancel -->
+                <div class="zest-mt-1em">
+                    <$tiddler tiddler=<<state>>>
+                        <$button class="tc-btn-invisible tc-tiddlylink">
+                            [Create Category]
+                            <$action-sendmessage $message="tm-zest-create-category"
+                                name={{!!categoryName}}
+                                description={{!!categoryDescription}}
+                                domainId=<<ref>>
+                                thesisText={{!!thesisText}}
+                                thesisNote={{!!thesisNote}}
+                                correctStatementsTag=<<correctStatementsTag>>
+                                incorrectStatementsTag=<<incorrectStatementsTag>>
+                            />
+                            <$action-deletetiddler $tiddler=<<state>>/>
+                            <$action-deletetiddler $filter="[tag<correctStatementsTag>] [tag<incorrectStatementsTag>]" />
+                        </$button>
+                    </$tiddler>
+                    <$button class="tc-btn-invisible tc-tiddlylink zest-ml-1em">
+                        [Cancel]
+                        <$action-deletetiddler $tiddler=<<state>>/>
+                        <$action-deletetiddler $filter="[tag<correctStatementsTag>] [tag<incorrectStatementsTag>]" />
+                    </$button>
+                </div>
+
+            </div>
+        </$list>
+
+        <$list filter="[<state>is[missing]]">
+            <$button class="tc-btn-invisible tc-tiddlylink">
+                [Add Category]
+                <$action-deletetiddler $tiddler=<<state>>/>
+                <$action-deletetiddler $filter="[tag<correctStatementsTag>] [tag<incorrectStatementsTag>]" />
+                <$action-setfield $tiddler=<<state>> text="1"/>
+            </$button>
+        </$list>
+    </$let>
+</div>

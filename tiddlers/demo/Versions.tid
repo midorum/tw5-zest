@@ -1,6 +1,13 @@
 title: Versions
 type: text/vnd.tiddlywiki
 
+!! 0.2.0
+
+* Migration 1: added notes field to category schema (please [[update|$:/plugins/midorum/zest]] your database to the new data schema)
+* Migration 2: changed thesis statements storage from text lists to separate tiddlers (please [[update|$:/plugins/midorum/zest]] your database to the new data schema)
+* Implemented wiki text editor component with live preview mode for thesis text, notes, and statements
+* Implemented E2E testing
+
 !! 0.1.2
 
 * sharing theses between several categories

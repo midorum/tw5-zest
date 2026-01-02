@@ -1,3 +1,9 @@
 domain:$:/zest/tags/domain
 category:$:/zest/tags/category
 thesis:$:/zest/tags/thesis
+statement:$:/zest/tags/statement
+statementCorrect:$:/zest/tags/statement/correct
+statementIncorrect:$:/zest/tags/statement/incorrect
+log:$:/zest/tags/log
+migration1:$:/zest/tags/migration1
+migration2:$:/zest/tags/migration2

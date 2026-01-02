@@ -23,16 +23,16 @@ zest-question-type: test
     </$list>
 </p>
 <p>
-    <$transclude $tiddler="$:/plugins/midorum/zest/templates/tag-pane"
+    <$transclude $tiddler=<<zest-l tag-pane>>
         qualifier=<<src>>
         tagFilter="[<src>tags[]tag[$:/zest/tags/category]]"
-        tagDisplayFieldName="text"
+        tagDisplayFieldName="name"
         removeTagButton="false"
         addTagButton="false"
         isClickable="true"
     >
         <$fill $name="click-tag-action">
-            <$transclude $tiddler="$:/plugins/midorum/zest/templates/navigate-to-category" ref=<<tag-ref>> />
+            <$transclude $tiddler=<<zest-l navigate-to-category>> ref=<<tag-ref>> />
         </$fill>
     </$transclude>
 </p>

@@ -6,3 +6,6 @@ tiddlers/*
 !tiddlers/test
 !tiddlers/demo
 schema/*
+.DS_Store
+test-results
+*.proto

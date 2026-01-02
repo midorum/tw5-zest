@@ -52,10 +52,15 @@ describe("The updateCategory service", () => {
     it("should update the category when all parameters are valid", () => {
         const options = utils.setupWiki();
         const domain = options.push.domain({ name: 'Domain', categories: [{ name: 'Category', theses: [{ text: 'Thesis' }] }] });
-        const params = { id: domain.categories[0].title, name: "NewCategoryName" };
+        const params = {
+            id: domain.categories[0].title,
+            name: "NewCategoryName",
+            description: "NewCategoryName Description"
+        };
         messageHandler.updateCategory(params, options.widget, options.env);
         expect(Logger.alert).toHaveBeenCalledTimes(0);
         const tiddler = options.wiki.getTiddler(domain.categories[0].title);
-        expect(tiddler.fields.text).toEqual(params.name);
+        expect(tiddler.fields.name).toEqual(params.name);
+        expect(tiddler.fields.text).toEqual(params.description);
     });
 });

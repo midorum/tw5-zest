@@ -1,0 +1,41 @@
+title: $:/plugins/midorum/zest/templates/wiki-text-editor
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+\parameters (
+    tiddler,
+    field:"text",
+    placeholder:"Enter wiki text...",
+    minHeight:"3em"
+)
+<$let previewState=`$:/temp/zest/wiki-text-editor/$(tiddler)$/$(field)$` >
+    <div class="zest-wiki-text-editor">
+        <$reveal type="match" text="yes" default="no" stateTitle=<<previewState>> stateField="text">
+            <div class="zest-flex-end zest-mb-0-3em">
+                <$slot $name="buttons"/>
+                <$button class="tc-btn-invisible" tooltip="Hide preview">
+                    <$action-setfield $tiddler=<<previewState>> text="no" />
+                    <$transclude $tiddler="$:/core/images/preview-open"/>
+                </$button>
+            </div>
+            <div class="zest-flex-row">
+                <div class="zest-flex-1">
+                    <$edit-text tiddler=<<tiddler>> field=<<field>> tag="textarea" placeholder=<<placeholder>> autoHeight="yes" minHeight=<<minHeight>> class="zest-code-input" />
+                </div>
+                <div class="zest-flex-1 zest-preview-pane">
+                    <$transclude tiddler=<<tiddler>> field=<<field>> mode="block"/>
+                </div>
+            </div>
+        </$reveal>
+        <$reveal type="nomatch" text="yes" default="no" stateTitle=<<previewState>> stateField="text">
+            <div class="zest-flex-end zest-mb-0-3em">
+                <$slot $name="buttons"/>
+                <$button class="tc-btn-invisible" tooltip="Show preview">
+                    <$action-setfield $tiddler=<<previewState>> text="yes" />
+                    <$transclude $tiddler="$:/core/images/preview-closed"/>
+                </$button>
+            </div>
+            <$edit-text tiddler=<<tiddler>> field=<<field>> tag="textarea" placeholder=<<placeholder>> autoHeight="yes" minHeight=<<minHeight>> class="zest-code-input" />
+        </$reveal>
+    </div>
+</$let>

@@ -1,3 +1,5 @@
 domain:$:/zest/db/domain/
 category:$:/zest/db/category/
 thesis:$:/zest/db/thesis/
+statement:$:/zest/db/statement/
+log:$:/zest/db/log/

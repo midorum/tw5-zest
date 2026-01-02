@@ -13,45 +13,46 @@ type: text/vnd.tiddlywiki
     showAnswer
 )
 <$list filter="[<correct-answers-count>compare:numder:eq[1]]" >
-    <$list filter="[<src>get[correct-statements]enlist-input[]] =[<src>get[incorrect-statements]enlist-input[]] +[zest:shuffle<random>]" join="<br/>">
+    <$list filter="[<src>get[correct-statements]enlist-input[]] =[<src>get[incorrect-statements]enlist-input[]] +[zest:shuffle<random>]">
     <$set name="colorName" filter="[<src>contains:correct-statements<currentTiddler>then[lime]else[gray]]" >
     <$set name="color" filter="[<showAnswer>compare:string:eq[yes]then<colorName>else[inherit]]" >
-        <$radio tiddler=<<state>> field=<<selectedStatementsFieldName>> value=<<currentTiddler>> 
-            disabled=<<disabled>>
-            style.margin="0 0.25em 0 0.5em"
-            actions="""
-                <$slot $name="on-select"/>
-            """
-        >
-            <span style=`color:$(color)$` >
-                <$transclude $tiddler=<<currentTiddler>> $field="title" $mode="inline" />
-                <!-- <$text text=<<currentTiddler>> /> -->
-            </span>
-        </$radio>
+        <div class="zest-flex-start-row zest-mb-0-5em">
+            <$radio tiddler=<<state>> field=<<selectedStatementsFieldName>> value=<<currentTiddler>>
+                disabled=<<disabled>>
+                style.margin="0.25em 0.5em 0 0"
+                style.flex-shrink="0"
+                actions="""
+                    <$slot $name="on-select"/>
+                """
+            />
+            <div style=`border:1px solid $(color)$; flex: 1;` >
+                <$transclude $tiddler=<<currentTiddler>> $field="text" $mode="block" />
+            </div>
+        </div>
     </$set>
     </$set>
     </$list>
 </$list>
 <$list filter="[<correct-answers-count>compare:numder:gt[1]]" >
-    <p style="font-size:larger">
+    <p class="zest-font-larger">
         Select &nbsp;<b><$text text=<<correct-answers-count>> /></b>&nbsp; statement(s)
     </p>
-    <$list filter="[<src>get[correct-statements]enlist-input[]] =[<src>get[incorrect-statements]enlist-input[]] +[zest:shuffle<random>]" join="<br/>">
+    <$list filter="[<src>get[correct-statements]enlist-input[]] =[<src>get[incorrect-statements]enlist-input[]] +[zest:shuffle<random>]">
     <$set name="colorName" filter="[<src>contains:correct-statements<currentTiddler>then[lime]else[gray]]" >
     <$set name="color" filter="[<showAnswer>compare:string:eq[yes]then<colorName>else[inherit]]" >
-        <$checkbox tiddler=<<state>> listField=<<checkedStatementsFieldName>> checked=<<currentTiddler>> 
-            disabled=<<disabled>>
-            style.margin="0 0.25em 0 0.5em"
-            style.vertical-align="baseline"
-            checkactions="""
-                <$slot $name="on-select"/>
-            """
-        >
-            <span style=`color:$(color)$` >
-                <$transclude $tiddler=<<currentTiddler>> $field="title" $mode="inline" />
-                <!-- <$text text=<<currentTiddler>> style.color=<<color>> /> -->
-            </span>
-        </$checkbox>
+        <div class="zest-flex-start-row zest-mb-0-5em">
+            <$checkbox tiddler=<<state>> listField=<<checkedStatementsFieldName>> checked=<<currentTiddler>>
+                disabled=<<disabled>>
+                style.margin="0.25em 0.5em 0 0"
+                style.flex-shrink="0"
+                checkactions="""
+                    <$slot $name="on-select"/>
+                """
+            />
+            <div style=`border:1px solid $(color)$; flex: 1;` >
+                <$transclude $tiddler=<<currentTiddler>> $field="text" $mode="block" />
+            </div>
+        </div>
     </$set>
     </$set>
     </$list>

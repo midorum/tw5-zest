@@ -1,0 +1,52 @@
+title: $:/plugins/midorum/zest/templates/category-add-thesis
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+\parameters (
+    ref
+)
+<div class="zest-mt-1em">
+    <$let state=`$:/temp/zest/thesis/editor/$(ref)$`
+        correctStatementsTag=`$:/temp/zest/statement/correct/$(ref)$`
+        incorrectStatementsTag=`$:/temp/zest/statement/incorrect/$(ref)$`
+    >
+        <$reveal type="match" stateTitle=<<state>> stateField="text" text="1" >
+            <div class="zest-add-thesis-form zest-form-container">
+                <$transclude $tiddler=<<zest-l thesis-create>>
+                    state=<<state>>
+                    correctStatementsTag=<<correctStatementsTag>>
+                    incorrectStatementsTag=<<incorrectStatementsTag>>
+                />
+                <div class="zest-mt-1em">
+                    <$tiddler tiddler=<<state>>>
+                        <$button class="tc-btn-invisible tc-tiddlylink zest-create-thesis-button">
+                            [Create Thesis]
+                            <$action-sendmessage $message="tm-zest-create-thesis"
+                                categoryId=<<ref>>
+                                text={{!!thesisText}}
+                                note={{!!thesisNote}}
+                                correctStatementsTag=<<correctStatementsTag>>
+                                incorrectStatementsTag=<<incorrectStatementsTag>>
+                            />
+                            <$action-deletetiddler $tiddler=<<state>>/>
+                        </$button>
+                    </$tiddler>
+                    <$button class="tc-btn-invisible tc-tiddlylink zest-cancel-create-thesis-button zest-ml-1em">
+                        [Cancel]
+                        <$action-deletetiddler $tiddler=<<state>>/>
+                        <$action-deletetiddler $filter="[tag<correctStatementsTag>] [tag<incorrectStatementsTag>]" />
+                    </$button>
+                </div>
+            </div>
+        </$reveal>
+
+        <$reveal type="nomatch" stateTitle=<<state>> stateField="text" text="1" >
+            <$button class="tc-btn-invisible tc-tiddlylink zest-add-thesis-button" >
+                [Add Thesis]
+                <$action-deletetiddler $tiddler=<<state>>/>
+                <$action-deletetiddler $filter="[tag<correctStatementsTag>] [tag<incorrectStatementsTag>]" />
+                <$action-setfield $tiddler=<<state>> text="1"/>
+            </$button>
+        </$reveal>
+    </$let>
+</div>

@@ -39,11 +39,9 @@ describe("The attachThesis service", () => {
 
     it("should fail when the thesis does not exist", () => {
         const options = utils.setupWiki();
-        const domains = options.push.domains([
-            { name: "Domain1", description: "Domain1 description" },
-        ]);
-        const categories = options.push.categories([
-            { name: "Category1", domains: domains },
+        const domain = options.push.domain({ name: "Domain1", description: "Domain1 description" });
+        const categories = options.push.categories_last([
+            { name: "Category1", domains: [domain.domain] },
         ])
         const params = {
             thesisId: "$:/zest/db/thesis/nonexistent",
@@ -79,14 +77,12 @@ describe("The attachThesis service", () => {
     it("should attach the thesis to the category when all parameters are valid", () => {
         const options = utils.setupWiki();
         // Create two categories with a thesis in the first one
-        const domains = options.push.domains([
-            { name: "Domain1", description: "Domain1 description" },
-        ]);
-        const categories = options.push.categories([
-            { name: "Category1", domains: domains },
-            { name: "Category2", domains: domains }
+        const domain = options.push.domain({ name: "Domain1", description: "Domain1 description" });
+        const categories = options.push.categories_last([
+            { name: "Category1", domains: [domain.domain] },
+            { name: "Category2", domains: [domain.domain] }
         ])
-        const theses = options.push.theses([
+        const theses = options.push.theses_last([
             { text: "Thesis1", note: "Thesis1 note", categories: categories.slice(0, 1) },
         ])
         const params = {

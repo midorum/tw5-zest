@@ -1,0 +1,67 @@
+title: $:/plugins/midorum/zest/templates/category-edit
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+\parameters (
+    ref,
+    state
+)
+<p class="zest-category-domains-section">
+    <$transclude $tiddler=<<zest-l tag-pane>>
+        qualifier=<<ref>>
+        tagFilter="[<ref>tags[]tag[$:/zest/tags/domain]]"
+        tagDisplayFieldName="name"
+        removeTagButton="true"
+        addTagButton="true"
+        addTagButtonName="[Link Domain]"
+        defaultListFilter="[tag[$:/zest/tags/domain]]"
+        searchFilter="[tag[$:/zest/tags/domain]regexp:name<pattern>]"
+        itemFieldName="name"
+        mode="block"
+    >
+        <$fill $name="remove-tag-action">
+            <$action-confirm $message="Do you wish to detach the category from this domain?" >
+                <$action-sendmessage $message="tm-zest-detach-category" categoryId=<<ref>> domainId=<<tag-ref>> />
+            </$action-confirm>
+        </$fill>
+        <$fill $name="item-select-action">
+            <$action-sendmessage $message="tm-zest-attach-category" categoryId=<<ref>> domainId=<<selected>> />
+        </$fill>
+    </$transclude>
+</p>
+
+<div class="zest-wide-input zest-category-name-input">
+    <label>
+        Category Name:<br/>
+        <$edit-text tiddler=<<state>> field="name" tag="input" type="text" class="zest-large-input"/>
+    </label>
+</div>
+
+<div class="zest-wide-input zest-category-description-input zest-mt-0-5em">
+    <label>
+        Category Description:<br/>
+        <$transclude $tiddler=<<zest-l wiki-text-editor>>
+            tiddler=<<state>>
+            field="description"
+            minHeight="3em"
+        />
+    </label>
+</div>
+
+<div class="zest-mt-0-5em">
+    <$button class="tc-btn-invisible tc-tiddlylink zest-save-category-button" >
+        [Save]
+        <$tiddler tiddler=<<state>> >
+            <$action-sendmessage $message="tm-zest-update-category"
+                id=<<ref>>
+                name={{!!name}}
+                description={{!!description}}
+            />
+        </$tiddler>
+        <$action-deletetiddler $tiddler=<<state>> />
+    </$button>
+    <$button class="tc-btn-invisible tc-tiddlylink zest-cancel-edit-category-button zest-ml-1em">
+        [Cancel]
+        <$action-deletetiddler $tiddler=<<state>> />
+    </$button>
+</div>

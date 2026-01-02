@@ -1,0 +1,14 @@
+title: $:/plugins/midorum/zest/migrations/migration1
+type: text/vnd.tiddlywiki
+
+<$transclude
+ $tiddler=<<zest-l migration>>
+ migration="migration1"
+ fromVer="0.1.2"
+ toVer="0.2.0"
+ cause="changed category data schema"
+ oldVerFilter="[tag[$:/zest/tags/category]!has:field[name]]"
+ newVerFilter="[tag[$:/zest/tags/category]has:field[name]]"
+ migrateMsg="migrate-1"
+ $mode=block
+/>

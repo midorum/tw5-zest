@@ -1,0 +1,19 @@
+title: $:/plugins/midorum/zest/templates/domain-categories
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+\parameters (
+ ref
+)
+<h3>Categories</h3>
+<div>
+    <$list filter="[tag[$:/zest/tags/category]tag<ref>]" variable="cat" emptyMessage="There are no categories yet.">
+        <div>
+            <$button
+                class="tc-btn-invisible tc-tiddlylink" >
+                <$view tiddler=<<cat>> field="name"/>
+                <$transclude $tiddler=<<zest-l navigate-to-category>> ref=<<cat>> />
+            </$button>
+        </div>
+    </$list>
+</div>
